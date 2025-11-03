@@ -346,6 +346,7 @@
     </div>
 
     <div class="main-content">
+        
         <div id="client-list-view">
             <div class="header">
                 <div class="search-bar">
@@ -460,6 +461,7 @@
             </div>
         </div>
 
+        
         <div id="new-client-form-view" class="new-client-form">
             <h2>Nuevo Cliente</h2>
             <div class="form-group">
@@ -483,7 +485,7 @@
                 <input type="email" id="email" name="email">
             </div>
             <div class="form-buttons">
-                <button type="submit" class="form-button">ENVIAR</button>
+                <button type="button" class="form-button" id="submit-client-form">ENVIAR</button>
                 <button type="button" class="form-button clear">BORRAR CAMPOS</button>
             </div>
         </div>
@@ -492,22 +494,26 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const showNewClientFormButton = document.getElementById('show-new-client-form');
+            const submitClientFormButton = document.getElementById('submit-client-form'); // Nuevo ID
             const clientListView = document.getElementById('client-list-view');
             const newClientFormView = document.getElementById('new-client-form-view');
 
+            // 1. Mostrar el formulario al hacer clic en "Nuevo Cliente"
             showNewClientFormButton.addEventListener('click', function() {
                 clientListView.style.display = 'none'; // Oculta la vista de la lista de clientes
                 newClientFormView.style.display = 'flex'; // Muestra el formulario de nuevo cliente
             });
 
-            // Opcional: Si quieres un botón para volver a la lista de clientes desde el formulario
-            // Podrías añadir un botón "Cancelar" al formulario y darle un ID.
-            // Por ejemplo:
-            // const cancelButton = document.getElementById('cancel-form');
-            // cancelButton.addEventListener('click', function() {
-            //     newClientFormView.style.display = 'none';
-            //     clientListView.style.display = 'block'; // O 'flex' o el display original
-            // });
+            // 2. Volver a la lista de clientes al hacer clic en "ENVIAR"
+            submitClientFormButton.addEventListener('click', function() {
+                // Aquí iría el código para enviar los datos del formulario (ej. una llamada a una API)
+                // alert('Cliente enviado (simulado)!'); 
+                
+                // Después de la "simulación" de envío, volvemos a la vista anterior
+                newClientFormView.style.display = 'none'; // Oculta el formulario
+                clientListView.style.display = 'block'; // Muestra la lista de clientes
+            });
+
         });
     </script>
 </body>
