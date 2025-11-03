@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Clientes</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 250px;
+            /* Degradado de color */
+            background: linear-gradient(180deg, rgba(138,43,226,1) 0%, rgba(186,85,211,1) 100%); /* Violeta a Orquídea */
+            color: white;
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            position: fixed;
+            left: 0;
+            top: 0;
+        }
+
+        .sidebar-item {
+            width: 100%;
+            padding: 15px 0;
+            text-align: center;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar-item:hover {
+            background-color: rgba(106, 13, 173, 0.5); /* Violeta más oscuro con transparencia */
+        }
+
+        .sidebar-item img {
+            width: 40px;
+            height: 40px;
+            filter: invert(100%); /* Para que los iconos se vean blancos */
+            margin-bottom: 5px;
+        }
+
+        .sidebar-item.active {
+            background-color: #fff;
+            color: #8a2be2;
+            border-left: 5px solid #8a2be2;
+        }
+
+        .sidebar-item.active img {
+            filter: invert(20%) sepia(80%) saturate(2000%) hue-rotate(240deg) brightness(80%) contrast(120%); /* Icono violeta */
+        }
+
+        .sidebar-item span {
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            flex-grow: 1;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            margin-bottom: 20px;
+        }
+
+        .search-bar {
+            background-color: #fff;
+            border-radius: 30px;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            flex-grow: 1;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-bar input {
+            border: none;
+            outline: none;
+            flex-grow: 1;
+            padding: 5px 10px;
+            font-size: 1em;
+        }
+
+        .search-bar .material-icons {
+            color: #8a2be2;
+            margin-right: 10px;
+        }
+
+        .new-client-button { /* Renombrado para evitar conflicto con la clase del formulario */
+            background-color: #8a2be2;
+            color: white;
+            border-radius: 30px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: background-color 0.3s ease;
+        }
+
+        .new-client-button:hover {
+            background-color: #6a0dad;
+        }
+
+        .new-client-button .material-icons {
+            margin-right: 5px;
+        }
+
+        .table-container {
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .table-header {
+            background-color: #8a2be2;
+            color: white;
+            padding: 15px 20px;
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        table th, table td {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        table th {
+            background-color: #f7f7f7;
+            color: #555;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9em;
+        }
+
+        table tbody tr:hover {
+            background-color: #fdfdfd;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .action-buttons .material-icons {
+            font-size: 1.2em;
+            padding: 8px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .action-buttons .material-icons.delete {
+            background-color: #333;
+            color: white;
+        }
+
+        .action-buttons .material-icons.delete:hover {
+            background-color: #000;
+        }
+
+        .action-buttons .material-icons.edit {
+            background-color: #00bcd4; /* Azul turquesa */
+            color: white;
+        }
+
+        .action-buttons .material-icons.edit:hover {
+            background-color: #0097a7;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
+
+        .pagination-button {
+            background-color: #8a2be2;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        .pagination-button:hover {
+            background-color: #6a0dad;
+        }
+
+        .pagination-number {
+            background-color: #f0f0f0;
+            color: #8a2be2;
+            padding: 8px 15px;
+            border-radius: 50%;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .pagination-number.active {
+            background-color: #8a2be2;
+            color: white;
+        }
+
+        .pagination-number:hover {
+            background-color: #e0e0e0;
+        }
+
+        /* Estilos para el formulario de Nuevo Cliente */
+        .new-client-form {
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            padding: 40px;
+            max-width: 800px;
+            margin: 50px auto;
+            display: none; /* Oculto por defecto */
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .new-client-form h2 {
+            color: #333;
+            margin-bottom: 40px;
+            font-size: 2em;
+        }
+
+        .form-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .form-group label {
+            width: 180px;
+            font-weight: 600;
+            color: #555;
+            font-size: 1.1em;
+            text-align: right;
+            margin-right: 30px;
+        }
+
+        .form-group input {
+            flex-grow: 1;
+            padding: 12px 15px;
+            border: 2px solid #8a2be2;
+            border-radius: 30px;
+            outline: none;
+            font-size: 1em;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-group input:focus {
+            border-color: #6a0dad;
+            box-shadow: 0 0 8px rgba(138,43,226,0.3);
+        }
+
+        .form-buttons {
+            display: flex;
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .form-button {
+            background-color: #8a2be2;
+            color: white;
+            padding: 15px 40px;
+            border-radius: 30px;
+            border: none;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .form-button:hover {
+            background-color: #6a0dad;
+        }
+
+        .form-button.clear {
+            background-color: #a052e6; /* Un tono un poco más claro de violeta */
+        }
+
+        .form-button.clear:hover {
+            background-color: #8a2be2;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-item">
+            <img src="https://img.icons8.com/ios-filled/50/ffffff/product.png" alt="Producto">
+            <span>Producto</span>
+        </div>
+        <div class="sidebar-item">
+            <img src="https://img.icons8.com/ios-filled/50/ffffff/bill.png" alt="Cotización">
+            <span>Cotización</span>
+        </div>
+        <div class="sidebar-item active">
+            <img src="https://img.icons8.com/ios-filled/50/8a2be2/group.png" alt="Clientes">
+            <span>Clientes</span>
+        </div>
+        <div class="sidebar-item">
+            <img src="https://img.icons8.com/ios-filled/50/ffffff/price-tag.png" alt="Generar Cotización">
+            <span>Generar Cotización</span>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div id="client-list-view">
+            <div class="header">
+                <div class="search-bar">
+                    <span class="material-icons">search</span>
+                    <input type="text" placeholder="">
+                </div>
+                <div class="new-client-button" id="show-new-client-form">
+                    <span class="material-icons">add</span>
+                    <span>Nuevo Cliente</span>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <div class="table-header">
+                    Cliente
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre Empresa</th>
+                            <th>Attn Cliente</th>
+                            <th>Dirección</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>FlexTronics</td>
+                            <td>Carlos Lopez</td>
+                            <td>Colonia Mexico 2121 Ags</td>
+                            <td>449 333 333</td>
+                            <td>carlos@gmail.com</td>
+                            <td class="action-buttons">
+                                <span class="material-icons delete">delete</span>
+                                <span class="material-icons edit">edit</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Jatco</td>
+                            <td>Pedro Flores</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td class="action-buttons">
+                                <span class="material-icons delete">delete</span>
+                                <span class="material-icons edit">edit</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Nissan</td>
+                            <td>Maria Jose</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td class="action-buttons">
+                                <span class="material-icons delete">delete</span>
+                                <span class="material-icons edit">edit</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Mabuchi</td>
+                            <td>Luis Santos</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td class="action-buttons">
+                                <span class="material-icons delete">delete</span>
+                                <span class="material-icons edit">edit</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>Ford</td>
+                            <td>Anastasiac</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td class="action-buttons">
+                                <span class="material-icons delete">delete</span>
+                                <span class="material-icons edit">edit</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Samsung</td>
+                            <td>Pedro Vazquez</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td class="action-buttons">
+                                <span class="material-icons delete">delete</span>
+                                <span class="material-icons edit">edit</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pagination">
+                <div class="pagination-button">FIRST PAGE</div>
+                <div class="pagination-number active">1</div>
+                <div class="pagination-number">2</div>
+                <div class="pagination-number">3</div>
+                <div class="pagination-button">LAST PAGE</div>
+            </div>
+        </div>
+
+        <div id="new-client-form-view" class="new-client-form">
+            <h2>Nuevo Cliente</h2>
+            <div class="form-group">
+                <label for="nombre-empresa">Nombre de empresa</label>
+                <input type="text" id="nombre-empresa" name="nombre-empresa">
+            </div>
+            <div class="form-group">
+                <label for="attn-persona">Attn de persona</label>
+                <input type="text" id="attn-persona" name="attn-persona">
+            </div>
+            <div class="form-group">
+                <label for="direccion">Dirección</label>
+                <input type="text" id="direccion" name="direccion">
+            </div>
+            <div class="form-group">
+                <label for="telefono">Teléfono</label>
+                <input type="text" id="telefono" name="telefono">
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email">
+            </div>
+            <div class="form-buttons">
+                <button type="submit" class="form-button">ENVIAR</button>
+                <button type="button" class="form-button clear">BORRAR CAMPOS</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const showNewClientFormButton = document.getElementById('show-new-client-form');
+            const clientListView = document.getElementById('client-list-view');
+            const newClientFormView = document.getElementById('new-client-form-view');
+
+            showNewClientFormButton.addEventListener('click', function() {
+                clientListView.style.display = 'none'; // Oculta la vista de la lista de clientes
+                newClientFormView.style.display = 'flex'; // Muestra el formulario de nuevo cliente
+            });
+
+            // Opcional: Si quieres un botón para volver a la lista de clientes desde el formulario
+            // Podrías añadir un botón "Cancelar" al formulario y darle un ID.
+            // Por ejemplo:
+            // const cancelButton = document.getElementById('cancel-form');
+            // cancelButton.addEventListener('click', function() {
+            //     newClientFormView.style.display = 'none';
+            //     clientListView.style.display = 'block'; // O 'flex' o el display original
+            // });
+        });
+    </script>
+</body>
+</html>
