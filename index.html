@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard de Clientes</title>
+    <title>Dashboard de Productos y Clientes</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
@@ -18,8 +18,7 @@
 
         .sidebar {
             width: 250px;
-            /* Degradado de color */
-            background: linear-gradient(180deg, rgba(138,43,226,1) 0%, rgba(186,85,211,1) 100%); /* Violeta a Orquídea */
+            background: linear-gradient(180deg, rgba(138,43,226,1) 0%, rgba(186,85,211,1) 100%);
             color: white;
             padding: 20px 0;
             display: flex;
@@ -45,14 +44,7 @@
         }
 
         .sidebar-item:hover {
-            background-color: rgba(106, 13, 173, 0.5); /* Violeta más oscuro con transparencia */
-        }
-
-        .sidebar-item img {
-            width: 40px;
-            height: 40px;
-            filter: invert(100%); /* Para que los iconos se vean blancos */
-            margin-bottom: 5px;
+            background-color: rgba(106, 13, 173, 0.5);
         }
 
         .sidebar-item.active {
@@ -61,8 +53,15 @@
             border-left: 5px solid #8a2be2;
         }
 
+        .sidebar-item img {
+            width: 40px;
+            height: 40px;
+            filter: invert(100%);
+            margin-bottom: 5px;
+        }
+
         .sidebar-item.active img {
-            filter: invert(20%) sepia(80%) saturate(2000%) hue-rotate(240deg) brightness(80%) contrast(120%); /* Icono violeta */
+            filter: invert(20%) sepia(80%) saturate(2000%) hue-rotate(240deg) brightness(80%) contrast(120%);
         }
 
         .sidebar-item span {
@@ -110,7 +109,7 @@
             margin-right: 10px;
         }
 
-        .new-client-button { /* Renombrado para evitar conflicto con la clase del formulario */
+        .new-button {
             background-color: #8a2be2;
             color: white;
             border-radius: 30px;
@@ -122,11 +121,11 @@
             transition: background-color 0.3s ease;
         }
 
-        .new-client-button:hover {
+        .new-button:hover {
             background-color: #6a0dad;
         }
 
-        .new-client-button .material-icons {
+        .new-button .material-icons {
             margin-right: 5px;
         }
 
@@ -192,7 +191,7 @@
         }
 
         .action-buttons .material-icons.edit {
-            background-color: #00bcd4; /* Azul turquesa */
+            background-color: #00bcd4;
             color: white;
         }
 
@@ -241,20 +240,20 @@
             background-color: #e0e0e0;
         }
 
-        /* Estilos para el formulario de Nuevo Cliente */
-        .new-client-form {
+        /* Estilos para formularios */
+        .form-view {
             background-color: #fff;
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             padding: 40px;
             max-width: 800px;
             margin: 50px auto;
-            display: none; /* Oculto por defecto */
+            display: none;
             flex-direction: column;
             align-items: center;
         }
 
-        .new-client-form h2 {
+        .form-view h2 {
             color: #333;
             margin-bottom: 40px;
             font-size: 2em;
@@ -277,7 +276,7 @@
             margin-right: 30px;
         }
 
-        .form-group input {
+        .form-group input, .form-group select {
             flex-grow: 1;
             padding: 12px 15px;
             border: 2px solid #8a2be2;
@@ -287,7 +286,7 @@
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
-        .form-group input:focus {
+        .form-group input:focus, .form-group select:focus {
             border-color: #6a0dad;
             box-shadow: 0 0 8px rgba(138,43,226,0.3);
         }
@@ -316,44 +315,180 @@
         }
 
         .form-button.clear {
-            background-color: #a052e6; /* Un tono un poco más claro de violeta */
+            background-color: #a052e6;
         }
 
         .form-button.clear:hover {
             background-color: #8a2be2;
         }
 
+        .view {
+            display: none;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .sidebar-nav-item {
+            padding: 10px 20px;
+            background-color: #fff;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .sidebar-nav-item.active {
+            background-color: #8a2be2;
+            color: white;
+        }
+
+        .sidebar-nav-item:hover {
+            background-color: #e0e0e0;
+        }
+
+        .sidebar-nav-item.active:hover {
+            background-color: #6a0dad;
+        }
     </style>
 </head>
 <body>
     <div class="sidebar">
-        <div class="sidebar-item">
+        <div class="sidebar-item" data-view="product-view">
             <img src="https://img.icons8.com/ios-filled/50/ffffff/product.png" alt="Producto">
             <span>Producto</span>
         </div>
-        <div class="sidebar-item">
+        <div class="sidebar-item" data-view="quotation-view">
             <img src="https://img.icons8.com/ios-filled/50/ffffff/bill.png" alt="Cotización">
             <span>Cotización</span>
         </div>
-        <div class="sidebar-item active">
+        <div class="sidebar-item active" data-view="client-view">
             <img src="https://img.icons8.com/ios-filled/50/8a2be2/group.png" alt="Clientes">
             <span>Clientes</span>
         </div>
-        <div class="sidebar-item">
+        <div class="sidebar-item" data-view="generate-quotation-view">
             <img src="https://img.icons8.com/ios-filled/50/ffffff/price-tag.png" alt="Generar Cotización">
             <span>Generar Cotización</span>
         </div>
     </div>
 
     <div class="main-content">
-        
-        <div id="client-list-view">
+        <!-- Vista de Productos -->
+        <div id="product-view" class="view">
             <div class="header">
                 <div class="search-bar">
                     <span class="material-icons">search</span>
-                    <input type="text" placeholder="">
+                    <input type="text" placeholder="Buscar productos...">
                 </div>
-                <div class="new-client-button" id="show-new-client-form">
+                <div class="new-button" id="show-new-product-form">
+                    <span class="material-icons">add</span>
+                    <span>Nuevo Producto</span>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <div class="table-header">
+                    Productos
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre Producto</th>
+                            <th>Descripción</th>
+                            <th>Precio Unitario</th>
+                            <th>Número Orden</th>
+                            <th>Máquina Asociada</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Producto A</td>
+                            <td>Descripción del Producto A</td>
+                            <td>$150.00</td>
+                            <td>ORD-001</td>
+                            <td>Máquina 1</td>
+                            <td class="action-buttons">
+                                <span class="material-icons delete">delete</span>
+                                <span class="material-icons edit">edit</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Producto B</td>
+                            <td>Descripción del Producto B</td>
+                            <td>$200.00</td>
+                            <td>ORD-002</td>
+                            <td>Máquina 2</td>
+                            <td class="action-buttons">
+                                <span class="material-icons delete">delete</span>
+                                <span class="material-icons edit">edit</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pagination">
+                <div class="pagination-button">FIRST PAGE</div>
+                <div class="pagination-number active">1</div>
+                <div class="pagination-number">2</div>
+                <div class="pagination-number">3</div>
+                <div class="pagination-button">LAST PAGE</div>
+            </div>
+        </div>
+
+        <!-- Vista de Nuevo Producto -->
+        <div id="new-product-form-view" class="form-view">
+            <h2>Nuevo Producto</h2>
+            <div class="form-group">
+                <label for="nombre-producto">Nombre del producto</label>
+                <input type="text" id="nombre-producto" name="nombre-producto">
+            </div>
+            <div class="form-group">
+                <label for="descripcion">Descripción</label>
+                <input type="text" id="descripcion" name="descripcion">
+            </div>
+            <div class="form-group">
+                <label for="precio-unitario">Precio unitario</label>
+                <input type="number" id="precio-unitario" name="precio-unitario" step="0.01">
+            </div>
+            <div class="form-group">
+                <label for="numero-orden">Número orden</label>
+                <input type="text" id="numero-orden" name="numero-orden">
+            </div>
+            <div class="form-group">
+                <label for="maquina-asociada">Máquina asociada</label>
+                <select id="maquina-asociada" name="maquina-asociada">
+                    <option value="">Seleccione una máquina</option>
+                    <option value="maquina1">Máquina 1</option>
+                    <option value="maquina2">Máquina 2</option>
+                    <option value="maquina3">Máquina 3</option>
+                </select>
+            </div>
+            <div class="form-buttons">
+                <button type="button" class="form-button" id="submit-product-form">ENVIAR</button>
+                <button type="button" class="form-button clear" id="clear-product-form">BORRAR CAMPOS</button>
+            </div>
+        </div>
+
+        <!-- Vista de Clientes (existente) -->
+        <div id="client-view" class="view active">
+            <div class="header">
+                <div class="search-bar">
+                    <span class="material-icons">search</span>
+                    <input type="text" placeholder="Buscar clientes...">
+                </div>
+                <div class="new-button" id="show-new-client-form">
                     <span class="material-icons">add</span>
                     <span>Nuevo Cliente</span>
                 </div>
@@ -361,7 +496,7 @@
 
             <div class="table-container">
                 <div class="table-header">
-                    Cliente
+                    Clientes
                 </div>
                 <table>
                     <thead>
@@ -461,8 +596,8 @@
             </div>
         </div>
 
-        
-        <div id="new-client-form-view" class="new-client-form">
+        <!-- Vista de Nuevo Cliente (existente) -->
+        <div id="new-client-form-view" class="form-view">
             <h2>Nuevo Cliente</h2>
             <div class="form-group">
                 <label for="nombre-empresa">Nombre de empresa</label>
@@ -486,34 +621,141 @@
             </div>
             <div class="form-buttons">
                 <button type="button" class="form-button" id="submit-client-form">ENVIAR</button>
-                <button type="button" class="form-button clear">BORRAR CAMPOS</button>
+                <button type="button" class="form-button clear" id="clear-client-form">BORRAR CAMPOS</button>
+            </div>
+        </div>
+
+        <!-- Vistas para Cotización y Generar Cotización (placeholder) -->
+        <div id="quotation-view" class="view">
+            <div class="header">
+                <div class="search-bar">
+                    <span class="material-icons">search</span>
+                    <input type="text" placeholder="Buscar cotizaciones...">
+                </div>
+            </div>
+            <div class="table-container">
+                <div class="table-header">
+                    Cotizaciones
+                </div>
+                <p style="padding: 20px; text-align: center;">Contenido de cotizaciones aquí</p>
+            </div>
+        </div>
+
+        <div id="generate-quotation-view" class="view">
+            <div class="header">
+                <h2>Generar Cotización</h2>
+            </div>
+            <div class="table-container">
+                <div class="table-header">
+                    Generar Nueva Cotización
+                </div>
+                <p style="padding: 20px; text-align: center;">Formulario para generar cotización aquí</p>
             </div>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Elementos de navegación del sidebar
+            const sidebarItems = document.querySelectorAll('.sidebar-item');
+            
+            // Elementos de vistas
+            const views = document.querySelectorAll('.view');
+            
+            // Botones para mostrar formularios
             const showNewClientFormButton = document.getElementById('show-new-client-form');
-            const submitClientFormButton = document.getElementById('submit-client-form'); // Nuevo ID
-            const clientListView = document.getElementById('client-list-view');
+            const showNewProductFormButton = document.getElementById('show-new-product-form');
+            
+            // Botones de envío de formularios
+            const submitClientFormButton = document.getElementById('submit-client-form');
+            const submitProductFormButton = document.getElementById('submit-product-form');
+            
+            // Botones para limpiar formularios
+            const clearClientFormButton = document.getElementById('clear-client-form');
+            const clearProductFormButton = document.getElementById('clear-product-form');
+            
+            // Formularios
             const newClientFormView = document.getElementById('new-client-form-view');
-
-            // 1. Mostrar el formulario al hacer clic en "Nuevo Cliente"
-            showNewClientFormButton.addEventListener('click', function() {
-                clientListView.style.display = 'none'; // Oculta la vista de la lista de clientes
-                newClientFormView.style.display = 'flex'; // Muestra el formulario de nuevo cliente
-            });
-
-            // 2. Volver a la lista de clientes al hacer clic en "ENVIAR"
-            submitClientFormButton.addEventListener('click', function() {
-                // Aquí iría el código para enviar los datos del formulario (ej. una llamada a una API)
-                // alert('Cliente enviado (simulado)!'); 
+            const newProductFormView = document.getElementById('new-product-form-view');
+            
+            // Función para cambiar de vista
+            function switchView(viewId) {
+                // Ocultar todas las vistas
+                views.forEach(view => {
+                    view.classList.remove('active');
+                });
                 
-                // Después de la "simulación" de envío, volvemos a la vista anterior
-                newClientFormView.style.display = 'none'; // Oculta el formulario
-                clientListView.style.display = 'block'; // Muestra la lista de clientes
+                // Mostrar la vista seleccionada
+                document.getElementById(viewId).classList.add('active');
+                
+                // Actualizar estado activo en el sidebar
+                sidebarItems.forEach(item => {
+                    item.classList.remove('active');
+                    if (item.getAttribute('data-view') === viewId) {
+                        item.classList.add('active');
+                    }
+                });
+                
+                // Ocultar formularios si están visibles
+                newClientFormView.style.display = 'none';
+                newProductFormView.style.display = 'none';
+            }
+            
+            // Configurar eventos para los elementos del sidebar
+            sidebarItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const viewId = this.getAttribute('data-view');
+                    switchView(viewId);
+                });
             });
-
+            
+            // Mostrar formulario de nuevo cliente
+            showNewClientFormButton.addEventListener('click', function() {
+                document.getElementById('client-view').classList.remove('active');
+                newClientFormView.style.display = 'flex';
+            });
+            
+            // Mostrar formulario de nuevo producto
+            showNewProductFormButton.addEventListener('click', function() {
+                document.getElementById('product-view').classList.remove('active');
+                newProductFormView.style.display = 'flex';
+            });
+            
+            // Enviar formulario de cliente
+            submitClientFormButton.addEventListener('click', function() {
+                // Aquí iría el código para enviar los datos del formulario
+                alert('Cliente enviado (simulado)!');
+                
+                // Volver a la vista de clientes
+                newClientFormView.style.display = 'none';
+                document.getElementById('client-view').classList.add('active');
+            });
+            
+            // Enviar formulario de producto
+            submitProductFormButton.addEventListener('click', function() {
+                // Aquí iría el código para enviar los datos del formulario
+                alert('Producto enviado (simulado)!');
+                
+                // Volver a la vista de productos
+                newProductFormView.style.display = 'none';
+                document.getElementById('product-view').classList.add('active');
+            });
+            
+            // Limpiar formulario de cliente
+            clearClientFormButton.addEventListener('click', function() {
+                const formInputs = newClientFormView.querySelectorAll('input');
+                formInputs.forEach(input => {
+                    input.value = '';
+                });
+            });
+            
+            // Limpiar formulario de producto
+            clearProductFormButton.addEventListener('click', function() {
+                const formInputs = newProductFormView.querySelectorAll('input, select');
+                formInputs.forEach(input => {
+                    input.value = '';
+                });
+            });
         });
     </script>
 </body>
