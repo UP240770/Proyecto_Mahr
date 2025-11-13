@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard de Productos y Clientes</title>
+    <title>Gatos en el plantel</title>
     <link rel="stylesheet" href="css/style.css">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    
 </head>
 <body>
+<!-- Apartado del sidebar-->
     <div class="sidebar">
         <div class="sidebar-item" data-view="product-view">
             <img src="https://img.icons8.com/ios-filled/50/ffffff/product.png" alt="Producto">
@@ -28,14 +28,18 @@
         </div>
     </div>
 
-    <div class="main-content">
+    <div class="main-content"> 
         <!-- Vista de Productos -->
         <div id="product-view" class="view">
             <div class="header">
+                <form action="php/buscar.php" method="post">
                 <div class="search-bar">
                     <span class="material-icons">search</span>
                     <input type="text" placeholder="Buscar productos...">
                 </div>
+                </form>
+
+
                 <div class="new-button" id="show-new-product-form">
                     <span class="material-icons">add</span>
                     <span>Nuevo Producto</span>
@@ -50,39 +54,49 @@
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Nombre Producto</th>
-                            <th>Descripción</th>
-                            <th>Precio Unitario</th>
-                            <th>Número Orden</th>
-                            <th>Máquina Asociada</th>
+                            <th>Nombre</th>
+                            <th>genero</th>
+                            <th>edad</th>
+                            <th>enfermedades</th>
+                            <th>Imagen</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
+
+<?php
+
+                        $cnx = mysqli_connect("localhost","root","","registro");
+
+                        $sql = "SELECT id, nombre, sexo, edad ,enfermedades,imagen FROM registro_gatos order by id desc";
+
+                        $rta = mysqli_query($cnx,$sql);
+
+
+
+
+
+                        while ($mostrar = mysqli_fetch_row($rta)){
+
+?>
+
+
                     <tbody>
                         <tr>
-                            <td>1</td>
-                            <td>Producto A</td>
-                            <td>Descripción del Producto A</td>
-                            <td>$150.00</td>
-                            <td>ORD-001</td>
-                            <td>Máquina 1</td>
+                            <td><?php echo $mostrar['0'] ?></td>
+                            <td><?php echo $mostrar['1'] ?></td>
+                            <td><?php echo $mostrar['2'] ?></td>
+                            <td><?php echo $mostrar['3'] ?></td>
+                            <td><?php echo $mostrar['4'] ?></td>
+                            <td><img height="50px" src="data:image/jpg;base64, <?php echo base64_encode($mostrar['5']) ?>"></td>
                             <td class="action-buttons">
-                                <span class="material-icons delete">delete</span>
-                                <span class="material-icons edit">edit</span>
+                               <span class="material-icons delete"><a href="php/sp_eliminar.php? id=<?php echo  $mostrar['0']?>">delete</a></span>  
+                               <span class="material-icons edit"><a href="php/editar.php?id=<?php echo $mostrar['0'] ?>"> edit</a></span> 
                             </td>
                         </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>Producto B</td>
-                            <td>Descripción del Producto B</td>
-                            <td>$200.00</td>
-                            <td>ORD-002</td>
-                            <td>Máquina 2</td>
-                            <td class="action-buttons">
-                                <span class="material-icons delete">delete</span>
-                                <span class="material-icons edit">edit</span>
-                            </td>
-                        </tr>
+ <?php
+
+}
+?>
                     </tbody>
                 </table>
             </div>
@@ -98,42 +112,43 @@
 
         <!-- Vista de Nuevo Producto -->
         <div id="new-product-form-view" class="form-view">
+            <form action="php/sp_insertar.php" method="post" enctype="multipart/form-data">
             <h2>Nuevo Producto</h2>
             <div class="form-group">
                 <label for="nombre-producto">Nombre del producto</label>
-                <input type="text" id="nombre-producto" name="nombre-producto">
+                <input type="text" name="nombre" id="" required="">
             </div>
             <div class="form-group">
-                <label for="descripcion">Descripción</label>
-                <input type="text" id="descripcion" name="descripcion">
+                <label for="descripcion">Genero</label>
+                <input type="text" name="sexo" id="">
             </div>
             <div class="form-group">
-                <label for="precio-unitario">Precio unitario</label>
-                <input type="number" id="precio-unitario" name="precio-unitario" step="0.01">
+                <label for="precio-unitario">Edad</label>
+                <input type="text" name="edad" id="">
             </div>
             <div class="form-group">
                 <label for="numero-orden">Número orden</label>
-                <input type="text" id="numero-orden" name="numero-orden">
+                <input type="text" name="enfermedades" id="">
             </div>
-            <div class="form-group">
-                <label for="maquina-asociada">Máquina asociada</label>
-                <select id="maquina-asociada" name="maquina-asociada">
-                    <option value="">Seleccione una máquina</option>
-                    <option value="maquina1">Máquina 1</option>
-                    <option value="maquina2">Máquina 2</option>
-                    <option value="maquina3">Máquina 3</option>
-                </select>
+             <div class="form-group">
+                <label for="numero-orden">Foto de gato</label>
+                <input type="file" name="imagen" id="">
             </div>
+            
             <div class="form-buttons">
-                <button type="button" class="form-button" id="submit-product-form">ENVIAR</button>
+                <button type="button" class="form-button" id="submit-product-form"><input type="submit" value="Guardar">ENVIAR</button>
                 <button type="button" class="form-button clear" id="clear-product-form">BORRAR CAMPOS</button>
+                <button type="button" class="form-button clear" id="clear-product-form"> Cancelar </button>
             </div>
+            </form>
         </div>
-         
+        
+    </div>
+
+<div>
 
 
-
-        <!-- Vista de Clientes (existente) -->
+  <!-- Vista de Clientes (existente) -->
         <div id="client-view" class="view active">
             <div class="header">
                 <div class="search-bar">
@@ -308,7 +323,17 @@
         </div>
     </div>
 
-    <script>
+
+
+
+
+
+
+
+
+
+
+<script>
         document.addEventListener('DOMContentLoaded', function() {
             // Elementos de navegación del sidebar
             const sidebarItems = document.querySelectorAll('.sidebar-item');
@@ -412,5 +437,6 @@
             });
         });
     </script>
+
 </body>
 </html>
