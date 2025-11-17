@@ -288,7 +288,42 @@ $rta = mysqli_query($cnx, $sql);
                             <td>Colonia Mexico 2121 Ags</td>
                             <td>449 333 333</td>
                             <td>carlos@gmail.com</td>
+                            <td class="action-buttons"> <tr>
+                            <td>2</td>
+                            <td>Jatco</td>
+                            <td>Pedro Flores</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
                             <td class="action-buttons">
+                                <span class="material-icons delete">delete</span>
+                                <span class="material-icons edit">edit</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Nissan</td>
+                            <td>Maria Jose</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td class="action-buttons">
+                                <span class="material-icons delete">delete</span>
+                                <span class="material-icons edit">edit</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Mabuchi</td>
+                            <td>Luis Santos</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td class="action-buttons">
+                                <span class="material-icons delete">delete</span>
+                                <span class="material-icons edit">edit</span>
+                            </td>
+                        </tr>
                                 <span class="material-icons delete">delete</span>
                                 <span class="material-icons edit">edit</span>
                             </td>
@@ -368,6 +403,12 @@ $rta = mysqli_query($cnx, $sql);
             </div>
         </div>
 
+
+
+
+
+
+        
         <div id="new-client-form-view" class="form-view">
             <h2>Nuevo Cliente</h2>
             <div class="form-group">

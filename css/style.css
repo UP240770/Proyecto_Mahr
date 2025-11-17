@@ -360,3 +360,16 @@ table tbody tr:hover {
 .view.active {
     display: block;
 }
+
+p{
+    text-align: center;
+    margin: 20px auto;
+    padding: 12px 20px;
+    background-color: #fbf3f3; /* Fondo muy claro, un toque de púrpura */
+    color: #ad0d0d; /* Color de texto del púrpura oscuro */
+    border-radius: 8px;
+    font-size: 0.95em;
+    font-weight: 500;
+    width: fit-content; /* Ajusta el ancho al contenido */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
