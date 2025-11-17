@@ -1,351 +1,362 @@
- @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f0f0f0;
-            display: flex;
-        }
+/* Color primario del diseño: Rojo/Marrón oscuro */
+:root {
+    --primary-color: rgb(114, 3, 3);
+    --primary-darker: rgb(63, 2, 2);
+    --edit-button-color: #d60202; /* Rojo más claro para el botón de edición */
+}
 
-        .sidebar {
-            width: 250px;
-            background: linear-gradient(180deg, rgba(138,43,226,1) 0%, rgba(186,85,211,1) 100%);
-            color: white;
-            padding: 20px 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 100vh;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-            position: fixed;
-            left: 0;
-            top: 0;
-        }
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+    display: flex;
+}
 
-        .sidebar-item {
-            width: 100%;
-            padding: 15px 0;
-            text-align: center;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 10px;
-            transition: background-color 0.3s ease;
-        }
+.sidebar {
+    width: 250px;
+    background: linear-gradient(180deg, var(--primary-color) 0%, var(--primary-darker) 100%);
+    color: white;
+    padding: 20px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    position: fixed;
+    left: 0;
+    top: 0;
+}
 
-        .sidebar-item:hover {
-            background-color: rgba(106, 13, 173, 0.5);
-        }
+.sidebar-item {
+    width: 100%;
+    padding: 15px 0;
+    text-align: center;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 10px;
+    transition: background-color 0.3s ease;
+}
 
-        .sidebar-item.active {
-            background-color: #fff;
-            color: #8a2be2;
-            border-left: 5px solid #8a2be2;
-        }
+.sidebar-item:hover {
+    background-color: rgba(114, 3, 3, 0.5); 
+}
 
-        .sidebar-item img {
-            width: 40px;
-            height: 40px;
-            filter: invert(100%);
-            margin-bottom: 5px;
-        }
+.sidebar-item.active {
+    background-color: #fff;
+    color: var(--primary-darker);
+    border-left: 5px solid var(--primary-darker);
+}
 
-        .sidebar-item.active img {
-            filter: invert(20%) sepia(80%) saturate(2000%) hue-rotate(240deg) brightness(80%) contrast(120%);
-        }
+.sidebar-item img {
+    width: 40px;
+    height: 40px;
+    filter: invert(100%); 
+    margin-bottom: 5px;
+}
 
-        .sidebar-item span {
-            font-size: 0.9em;
-            font-weight: 600;
-        }
+.sidebar-item.active img {
+    filter: invert(10%) sepia(80%) saturate(6000%) hue-rotate(340deg) brightness(50%) contrast(120%);
+}
 
-        .main-content {
-            margin-left: 250px;
-            flex-grow: 1;
-            padding: 20px;
-            background-color: #f0f0f0;
-        }
+.sidebar-item span {
+    font-size: 0.9em;
+    font-weight: 600;
+}
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 0;
-            margin-bottom: 20px;
-        }
+.main-content {
+    margin-left: 250px;
+    flex-grow: 1;
+    padding: 20px;
+    background-color: #f0f0f0;
+}
 
-        .search-bar {
-            background-color: #fff;
-            border-radius: 30px;
-            padding: 8px 15px;
-            display: flex;
-            align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            flex-grow: 1;
-            max-width: 600px;
-            margin: 0 auto;
-        }
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    margin-bottom: 20px;
+}
 
-        .search-bar input {
-            border: none;
-            outline: none;
-            flex-grow: 1;
-            padding: 5px 10px;
-            font-size: 1em;
-        }
+.search-bar {
+    background-color: #fff;
+    border-radius: 30px;
+    padding: 8px 15px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    flex-grow: 1;
+    max-width: 600px;
+    margin: 0 20px;
+}
 
-        .search-bar .material-icons {
-            color: #8a2be2;
-            margin-right: 10px;
-        }
+.search-bar input {
+    border: none;
+    outline: none;
+    flex-grow: 1;
+    padding: 5px 10px;
+    font-size: 1em;
+}
 
-        .new-button {
-            background-color: #8a2be2;
-            color: white;
-            border-radius: 30px;
-            padding: 10px 20px;
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            transition: background-color 0.3s ease;
-        }
+.search-bar .material-icons {
+    color: var(--primary-color);
+    margin-right: 10px;
+}
 
-        .new-button:hover {
-            background-color: #6a0dad;
-        }
+.new-button {
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 30px;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: background-color 0.3s ease;
+}
 
-        .new-button .material-icons {
-            margin-right: 5px;
-        }
+.new-button:hover {
+    background-color: var(--primary-darker);
+}
 
-        .table-container {
-            background-color: #fff;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
+.new-button .material-icons {
+    margin-right: 5px;
+}
 
-        .table-header {
-            background-color: #8a2be2;
-            color: white;
-            padding: 15px 20px;
-            font-size: 1.2em;
-            font-weight: 600;
-        }
+.table-container {
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    overflow: hidden;
+    margin-bottom: 20px;
+}
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
+.table-header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 15px 20px;
+    font-size: 1.2em;
+    font-weight: 600;
+}
 
-        table th, table td {
-            padding: 15px 20px;
-            border-bottom: 1px solid #eee;
-        }
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
 
-        table th {
-            background-color: #f7f7f7;
-            color: #555;
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.9em;
-        }
+table th, table td {
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+}
 
-        table tbody tr:hover {
-            background-color: #fdfdfd;
-        }
+table th {
+    background-color: #f7f7f7;
+    color: #555;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.9em;
+}
 
-        .action-buttons {
-            display: flex;
-            gap: 5px;
-        }
+table tbody tr:hover {
+    background-color: #fdfdfd;
+}
 
-        .action-buttons .material-icons {
-            font-size: 1.2em;
-            padding: 8px;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
+.action-buttons {
+    display: flex;
+    gap: 5px;
+}
 
-        .action-buttons .material-icons.delete {
-            background-color: #333;
-            color: white;
-        }
+.action-buttons .material-icons {
+    font-size: 1.2em;
+    padding: 8px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
 
-        .action-buttons .material-icons.delete:hover {
-            background-color: #000;
-        }
+.action-buttons .material-icons a {
+    text-decoration: none;
+    color: inherit;
+}
 
-        .action-buttons .material-icons.edit {
-            background-color: #00bcd4;
-            color: white;
-        }
+.action-buttons .material-icons.delete {
+    background-color: #333;
+    color: white;
+}
 
-        .action-buttons .material-icons.edit:hover {
-            background-color: #0097a7;
-        }
+.action-buttons .material-icons.delete:hover {
+    background-color: #000;
+}
 
-        .pagination {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-top: 20px;
-            gap: 10px;
-        }
+.action-buttons .material-icons.edit {
+    background-color: var(--edit-button-color);
+    color: white;
+}
 
-        .pagination-button {
-            background-color: #8a2be2;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: background-color 0.3s ease;
-        }
+.action-buttons .material-icons.edit:hover {
+    background-color: #a70000;
+}
 
-        .pagination-button:hover {
-            background-color: #6a0dad;
-        }
+/* --- ESTILOS DE PAGINACIÓN ACTUALIZADOS --- */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    gap: 10px;
+    padding-bottom: 20px; 
+}
 
-        .pagination-number {
-            background-color: #f0f0f0;
-            color: #8a2be2;
-            padding: 8px 15px;
-            border-radius: 50%;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
+.pagination a,
+.pagination span {
+    display: inline-block;
+    text-decoration: none;
+    cursor: pointer;
+    font-weight: 600;
+    text-align: center;
+    transition: background-color 0.3s ease, color 0.3s ease, opacity 0.3s ease;
+    min-width: 40px; 
+}
 
-        .pagination-number.active {
-            background-color: #8a2be2;
-            color: white;
-        }
+/* Estilo para los botones grandes (FIRST PAGE, etc.) */
+.pagination a.pagination-button,
+.pagination span.pagination-button {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 8px; /* Botones redondeados */
+    font-size: 0.9em;
+}
 
-        .pagination-number:hover {
-            background-color: #e0e0e0;
-        }
+.pagination a.pagination-button:hover {
+    background-color: var(--primary-darker);
+}
 
-        /* Estilos para formularios */
-        .form-view {
-            background-color: #fff;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            padding: 40px;
-            max-width: 800px;
-            margin: 50px auto;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-        }
+/* Estilo para los botones deshabilitados */
+.pagination span.pagination-button.disabled {
+    opacity: 0.6;
+    pointer-events: none;
+    cursor: default;
+    background-color: #ccc; 
+    color: #666;
+    padding: 10px 15px;
+    border-radius: 8px;
+}
 
-        .form-view h2 {
-            color: #333;
-            margin-bottom: 40px;
-            font-size: 2em;
-        }
+/* Estilo para los números de página (no activos) y puntos suspensivos */
+.pagination a.pagination-number,
+.pagination span.pagination-number {
+    background-color: #fff; 
+    color: var(--primary-color);
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
+}
 
-        .form-group {
-            display: flex;
-            align-items: center;
-            margin-bottom: 25px;
-            width: 100%;
-            max-width: 600px;
-        }
+.pagination a.pagination-number:hover {
+    background-color: #f0f0f0;
+}
 
-        .form-group label {
-            width: 180px;
-            font-weight: 600;
-            color: #555;
-            font-size: 1.1em;
-            text-align: right;
-            margin-right: 30px;
-        }
+/* Estilo para la página activa */
+.pagination a.pagination-number.active {
+    background-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+}
+/* --- FIN ESTILOS DE PAGINACIÓN --- */
 
-        .form-group input, .form-group select {
-            flex-grow: 1;
-            padding: 12px 15px;
-            border: 2px solid #8a2be2;
-            border-radius: 30px;
-            outline: none;
-            font-size: 1em;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        }
+/* Estilos para formularios */
+.form-view {
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    padding: 40px;
+    max-width: 800px;
+    margin: 50px auto;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+}
 
-        .form-group input:focus, .form-group select:focus {
-            border-color: #6a0dad;
-            box-shadow: 0 0 8px rgba(138,43,226,0.3);
-        }
+.form-view h2 {
+    color: #333;
+    margin-bottom: 40px;
+    font-size: 2em;
+}
 
-        .form-buttons {
-            display: flex;
-            gap: 30px;
-            margin-top: 50px;
-        }
+.form-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 25px;
+    width: 100%;
+    max-width: 600px;
+}
 
-        .form-button {
-            background-color: #8a2be2;
-            color: white;
-            padding: 15px 40px;
-            border-radius: 30px;
-            border: none;
-            font-size: 1.1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
+.form-group label {
+    width: 180px;
+    font-weight: 600;
+    color: #555;
+    font-size: 1.1em;
+    text-align: right;
+    margin-right: 30px;
+}
 
-        .form-button:hover {
-            background-color: #6a0dad;
-        }
+.form-group input, .form-group select {
+    flex-grow: 1;
+    padding: 12px 15px;
+    border: 2px solid var(--primary-color);
+    border-radius: 30px;
+    outline: none;
+    font-size: 1em;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
 
-        .form-button.clear {
-            background-color: #a052e6;
-        }
+.form-group input:focus, .form-group select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 8px rgba(114, 3, 3, 0.3);
+}
 
-        .form-button.clear:hover {
-            background-color: #8a2be2;
-        }
+.form-buttons {
+    display: flex;
+    gap: 30px;
+    margin-top: 50px;
+}
 
-        .view {
-            display: none;
-        }
+.form-button {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 15px 40px;
+    border-radius: 30px;
+    border: none;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
 
-        .view.active {
-            display: block;
-        }
+.form-button:hover {
+    background-color: var(--primary-darker);
+}
 
-        .sidebar-nav {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
+.form-button.clear {
+    background-color: rgb(151, 9, 9);
+}
 
-        .sidebar-nav-item {
-            padding: 10px 20px;
-            background-color: #fff;
-            border-radius: 30px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
+.form-button.clear:hover {
+    background-color: var(--primary-darker);
+}
 
-        .sidebar-nav-item.active {
-            background-color: #8a2be2;
-            color: white;
-        }
+.view {
+    display: none;
+}
 
-        .sidebar-nav-item:hover {
-            background-color: #e0e0e0;
-        }
-
-        .sidebar-nav-item.active:hover {
-            background-color: #6a0dad;
-        }
+.view.active {
+    display: block;
+}
