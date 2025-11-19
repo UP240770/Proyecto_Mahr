@@ -1,11 +1,11 @@
 <?php
-$id = $_GET['id'];
+$id = $_GET['IDProducto'];
 
 
 
-$cnx = mysqli_connect("localhost","root","","registro");
+$cnx = mysqli_connect("localhost","root","","mahr");
 
-$sql = "DELETE FROM registro_gatos where id like $id";
+$sql = "DELETE FROM producto where IDProducto like $id";
 
 $rta = mysqli_query($cnx,$sql);
 
@@ -18,7 +18,7 @@ echo "No se elimino";
 else{
 
 
-header("Location: index.php");
+header("Location: " . $_SERVER['PHP_SELF']);
 
 
 }

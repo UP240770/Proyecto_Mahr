@@ -2,9 +2,9 @@
 
 /* Color primario del diseño: Rojo/Marrón oscuro */
 :root {
-    --primary-color: rgb(224, 8, 8);
-    --primary-darker: rgb(194, 8, 8);
-    --edit-button-color: #ac0707; /* Rojo más claro para el botón de edición */
+    --primary-color: rgb(114, 3, 3);
+    --primary-darker: rgb(63, 2, 2);
+    --edit-button-color: #d60202; /* Rojo más claro para el botón de edición */
 }
 
 body {
@@ -43,7 +43,7 @@ body {
 }
 
 .sidebar-item:hover {
-    background-color: rgba(165, 8, 8, 0.5); 
+    background-color: rgba(114, 3, 3, 0.5); 
 }
 
 .sidebar-item.active {
@@ -319,7 +319,7 @@ table tbody tr:hover {
 
 .form-group input:focus, .form-group select:focus {
     border-color: var(--primary-color);
-    box-shadow: 0 0 8px rgba(212, 5, 5, 0.3);
+    box-shadow: 0 0 8px rgba(114, 3, 3, 0.3);
 }
 
 .form-buttons {
@@ -346,7 +346,7 @@ table tbody tr:hover {
 }
 
 .form-button.clear {
-    background-color: rgb(197, 7, 7);
+    background-color: rgb(151, 9, 9);
 }
 
 .form-button.clear:hover {

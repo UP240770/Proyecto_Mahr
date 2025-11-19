@@ -31,13 +31,17 @@
     <div class="main-content"> 
         <div id="product-view" class="view active">
             <div class="header">
-                <form action="php/buscar.php" method="post">
-                <div class="search-bar">
-                    <span class="material-icons">search</span>
-                    <input type="text" placeholder="Buscar productos...">
-                </div>
+                <form action="php/buscar.php" method="post" id="product-search-form">
+                    <div class="search-bar">
+                        <span class="material-icons">search</span>
+                        <input type="text" name="buscar" placeholder="Buscar productos...">
+                    </div>
                 </form>
-
+                <div class="new-button" onclick="document.getElementById('product-search-form').submit()">
+                    <span class="material-icons">search</span>
+                    <span>Buscar</span>
+                </div>
+                
                 <div class="new-button" id="show-new-product-form">
                     <span class="material-icons">add</span>
                     <span>Nuevo Producto</span>
@@ -84,7 +88,8 @@ if ($total_paginas === 0) {
 }
 
 // 6. Consulta de la página actual con LIMIT
-$sql = "SELECT IDProducto, CodigoProducto, Descripcion, PrecioUnitario ,NumeroUnitario,NumeroOrden 
+// NOTA: Usar sentencias preparadas AQUÍ es la forma más segura, pero se mantuvo la estructura para compatibilidad con la paginación.
+$sql = "SELECT IDProducto, PriceReference , Currency , ProductCode, DescriptionLong1 , DescriptionLong2 ,OrderUnit,Listprice , NumeroOrden 
         FROM producto 
         ORDER BY IDProducto DESC 
         LIMIT $inicio, $elementos_pagina";
@@ -97,10 +102,13 @@ $rta = mysqli_query($cnx, $sql);
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Codigo Producto</th>
-                            <th>Descripcion</th>
-                            <th>Precio Unitario</th>
-                            <th>Numero Unitario</th>
+                            <th>Price Reference</th>
+                            <th>Currency</th>
+                            <th>Product Code</th>
+                            <th>Description 1</th>
+                            <th>Description 2</th>
+                            <th>Order Unit</th>
+                            <th>List Price</th>
                             <th>Numero Orden</th>
                             <th>Acciones</th>
                         </tr>
@@ -112,15 +120,18 @@ $rta = mysqli_query($cnx, $sql);
         while ($mostrar = mysqli_fetch_row($rta)){
 ?>
                         <tr>
-                            <td><?php echo $mostrar['0'] ?></td>
-                            <td><?php echo $mostrar['1'] ?></td>
-                            <td><?php echo $mostrar['2'] ?></td>
-                            <td><?php echo $mostrar['3'] ?></td>
-                            <td><?php echo $mostrar['4'] ?></td>
-                            <td><?php echo $mostrar['5'] ?></td>
+                            <td><?php echo htmlspecialchars($mostrar['0']) ?></td>
+                            <td><?php echo htmlspecialchars($mostrar['1']) ?></td>
+                            <td><?php echo htmlspecialchars($mostrar['2']) ?></td>
+                            <td><?php echo htmlspecialchars($mostrar['3']) ?></td>
+                            <td><?php echo htmlspecialchars($mostrar['4']) ?></td>
+                            <td><?php echo htmlspecialchars($mostrar['5']) ?></td>
+                            <td><?php echo htmlspecialchars($mostrar['6']) ?></td>
+                            <td><?php echo htmlspecialchars($mostrar['7']) ?></td>
+                            <td><?php echo htmlspecialchars($mostrar['8']) ?></td>
                             <td class="action-buttons">
-                               <span class="material-icons delete"><a href="php/sp_eliminar.php? IDProducto=<?php echo  $mostrar['0']?>">delete</a></span>  
-                               <span class="material-icons edit"><a href="php/editar.php?IDProducto=<?php echo $mostrar['0'] ?>"> edit</a></span> 
+                               <span class="material-icons delete"><a href="php/sp_eliminar.php?IDProducto=<?php echo urlencode($mostrar['0'])?>">delete</a></span>  
+                               <span class="material-icons edit"><a href="php/editar.php?IDProducto=<?php echo urlencode($mostrar['0']) ?>">edit</a></span> 
                             </td>
                         </tr>
 <?php
@@ -129,7 +140,7 @@ $rta = mysqli_query($cnx, $sql);
         // Mensaje si no hay productos
 ?>
                         <tr>
-                            <td colspan="7" style="text-align: center;">No hay productos para mostrar.</td>
+                            <td colspan="10" style="text-align: center;">No hay productos para mostrar.</td>
                         </tr>
 <?php
     }
@@ -215,28 +226,40 @@ $rta = mysqli_query($cnx, $sql);
             <form action="php/sp_insertar.php" method="post" enctype="multipart/form-data">
             <h2>Nuevo Producto</h2>
             <div class="form-group">
-                <label for="nombre-producto">Nombre del producto</label>
-                <input type="text" name="nombre" id="" required="">
+                <label for="ref-price">Price Reference</label>
+                <input type="text" name="PriceReference" id="ref-price" required="">
             </div>
             <div class="form-group">
-                <label for="descripcion">Genero</label>
-                <input type="text" name="sexo" id="">
+                <label for="currency">Currency</label>
+                <input type="text" name="Currency" id="currency">
             </div>
             <div class="form-group">
-                <label for="precio-unitario">Edad</label>
-                <input type="text" name="edad" id="">
+                <label for="product-code">Product Code</label>
+                <input type="number" name="ProductCode" id="product-code">
             </div>
             <div class="form-group">
-                <label for="numero-orden">Número orden</label>
-                <input type="text" name="enfermedades" id="">
+                <label for="desc-long1">Description 1</label>
+                <input type="text" name="DescriptionLong1" id="desc-long1"> 
             </div>
-             <div class="form-group">
-                <label for="numero-orden">Foto de gato</label>
-                <input type="file" name="imagen" id="">
+            <div class="form-group">
+                <label for="desc-long2">Description 2</label>
+                 <input type="text" name="DescriptionLong2" id="desc-long2">
+            </div>
+            <div class="form-group">
+                <label for="order-unit">Order Unit</label>
+                <input type="text" name="OrderUnit" id="order-unit">
+            </div>
+            <div class="form-group">
+                <label for="list-price">List Price</label>
+                <input type="text" name="Listprice" id="list-price">
+            </div>
+            <div class="form-group">
+                <label for="num-orden">Numero de orden</label>
+                <input type="text" name="NumeroOrden" id="num-orden">
             </div>
             
             <div class="form-buttons">
-                <button type="submit" class="form-button">ENVIAR</button>
+                <button type="submit" value="Guardar" class="form-button" id="submit-product-form">ENVIAR</button>
                 <button type="button" class="form-button clear" id="clear-product-form">BORRAR CAMPOS</button>
                 <button type="button" class="form-button clear" id="cancel-product-form"> Cancelar </button>
             </div>
@@ -247,10 +270,6 @@ $rta = mysqli_query($cnx, $sql);
 
 <div>
 
-
-
-
-            <!--Vista de tabla de clientes -->
 
   <div id="client-view" class="view">
             <div class="header">
@@ -288,42 +307,7 @@ $rta = mysqli_query($cnx, $sql);
                             <td>Colonia Mexico 2121 Ags</td>
                             <td>449 333 333</td>
                             <td>carlos@gmail.com</td>
-                            <td class="action-buttons"> <tr>
-                            <td>2</td>
-                            <td>Jatco</td>
-                            <td>Pedro Flores</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
                             <td class="action-buttons">
-                                <span class="material-icons delete">delete</span>
-                                <span class="material-icons edit">edit</span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td>Nissan</td>
-                            <td>Maria Jose</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td class="action-buttons">
-                                <span class="material-icons delete">delete</span>
-                                <span class="material-icons edit">edit</span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>4</td>
-                            <td>Mabuchi</td>
-                            <td>Luis Santos</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td class="action-buttons">
-                                <span class="material-icons delete">delete</span>
-                                <span class="material-icons edit">edit</span>
-                            </td>
-                        </tr>
                                 <span class="material-icons delete">delete</span>
                                 <span class="material-icons edit">edit</span>
                             </td>
@@ -488,6 +472,7 @@ if (isset($cnx)) {
             
             // Botones de envío de formularios
             const submitClientFormButton = document.getElementById('submit-client-form');
+            const submitProductFormButton = document.getElementById('submit-product-form'); // Nuevo botón de producto
             
             // Botones para limpiar formularios
             const clearClientFormButton = document.getElementById('clear-client-form');
@@ -542,30 +527,24 @@ if (isset($cnx)) {
                 newProductFormView.style.display = 'flex';
             });
             
-            // Enviar formulario de cliente
+            // Enviar formulario de cliente (Simulado)
             submitClientFormButton.addEventListener('click', function() {
-                // Aquí iría el código para enviar los datos del formulario
                 alert('Cliente enviado (simulado)!');
-                
-                // Volver a la vista de clientes
                 newClientFormView.style.display = 'none';
                 document.getElementById('client-view').classList.add('active');
             });
             
+            // Enviar formulario de producto (Real - el botón es type="submit")
+            // No se necesita un listener de click para el envío, solo para la lógica de visualización si fuese necesario
+            
             // Limpiar formulario de cliente
             clearClientFormButton.addEventListener('click', function() {
-                const formInputs = newClientFormView.querySelectorAll('input');
-                formInputs.forEach(input => {
-                    input.value = '';
-                });
+                newClientFormView.querySelector('form').reset();
             });
             
             // Limpiar formulario de producto
             clearProductFormButton.addEventListener('click', function() {
-                const formInputs = newProductFormView.querySelectorAll('input, select');
-                formInputs.forEach(input => {
-                    input.value = '';
-                });
+                newProductFormView.querySelector('form').reset();
             });
 
             // Cancelar formulario de producto
@@ -574,7 +553,6 @@ if (isset($cnx)) {
                 productView.classList.add('active');
                 // Asegúrate de que el sidebar item correspondiente esté activo
                 document.querySelector('.sidebar-item[data-view="product-view"]').classList.add('active');
-                document.querySelector('.sidebar-item[data-view="client-view"]').classList.remove('active'); // O el que sea necesario
             });
 
             // Al cargar, asegurarse de que la vista de productos esté activa si no hay otra definida

@@ -1,61 +1,83 @@
 <?php
 // Habilitar la visualización de errores (Quitar en producción)
+// **ATENCIÓN:** Esto es útil en desarrollo, pero desactívalo en producción.
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+// 1. CONEXIÓN A LA BASE DE DATOS
+$cnx = new mysqli("localhost", "root", "", "mahr"); // Usamos el modo orientado a objetos
 
-// 1. CONEXIÓN A LA BASE DE DATOS (DEBE SER LO PRIMERO)
-$cnx = mysqli_connect("localhost","root","","registro");
-
-if (!$cnx) { 
-    die("Fallo de conexión a la BD: " . mysqli_connect_error());
+if ($cnx->connect_error) { 
+    die("Fallo de conexión a la BD: " . $cnx->connect_error);
 }
 
-// 2. OBTENER Y SANEAR DATOS DE TEXTO
-$id = $_POST['id'];
-$nombre = mysqli_real_escape_string($cnx, $_POST['nombre']); 
-$sexo = mysqli_real_escape_string($cnx, $_POST['sexo']);
-$edad = mysqli_real_escape_string($cnx, $_POST['edad']);
-$enfermedades = mysqli_real_escape_string($cnx, $_POST['enfermedades']);
+// 2. OBTENER Y VALIDAR DATOS DE ENTRADA
+// Usamos el operador de fusión nula (??) para evitar errores si un campo POST no existe
+$id = $_POST['IDProducto'] ?? null;
+$PriceReference = $_POST['PriceReference'] ?? '';
+$Currency = $_POST['Currency'] ?? '';
+$ProductCode = $_POST['ProductCode'] ?? '';
+$DescriptionLong1 = $_POST['DescriptionLong1'] ?? '';
+$DescriptionLong2 = $_POST['DescriptionLong2'] ?? '';
+$OrderUnit = $_POST['OrderUnit'] ?? '';
+$Listprice = $_POST['Listprice'] ?? 0; // Se asume que Listprice es numérico
 
-
-// ** 3. LÓGICA DE ACTUALIZACIÓN DE IMAGEN **
-$set_imagen = ""; // Variable para añadir el campo de imagen al SQL si es necesario
-
-// Verificar si el usuario SUBIÓ un nuevo archivo de imagen
-if (isset($_FILES['nueva_imagen']) && $_FILES['nueva_imagen']['error'] == UPLOAD_ERR_OK) {
-    
-    // Leer el contenido BINARIO del archivo
-    $imagen_tmp = $_FILES['nueva_imagen']['tmp_name'];
-    $imagen_binaria = file_get_contents($imagen_tmp);
-    
-    // Sanear la imagen (esencial para datos binarios)
-    $imagen_segura = mysqli_real_escape_string($cnx, $imagen_binaria);
-    
-    // Preparar el segmento SQL para actualizar la imagen
-    $set_imagen = ", imagen='$imagen_segura'"; 
+// El ID del producto es crucial para la actualización
+if (is_null($id)) {
+    die("Error: IDProducto no recibido.");
 }
 
+// 3. CONSTRUIR Y PREPARAR LA CONSULTA DE ACTUALIZACIÓN (SEGURO)
 
-// 4. CONSTRUIR Y EJECUTAR LA CONSULTA
-// La consulta incluye $set_imagen SOLO si se subió una nueva imagen.
-$sql = "UPDATE registro_gatos SET 
-        nombre='$nombre',
-        sexo='$sexo',
-        edad='$edad',
-        enfermedades='$enfermedades'
-        " . $set_imagen . " 
-        WHERE id = $id";
+$sql = "UPDATE producto SET 
+        PriceReference = ?,
+        Currency = ?,
+        ProductCode = ?,
+        DescriptionLong1 = ?,
+        DescriptionLong2 = ?,
+        OrderUnit = ?,
+        Listprice = ?
+        WHERE IDProducto = ?"; // Usamos IDProducto como clave
 
-$rta = mysqli_query($cnx,$sql);
+$stmt = $cnx->prepare($sql);
 
-
-// 5. REDIRECCIÓN
-if(!$rta){
-    echo "No se actualizó. Error: " . mysqli_error($cnx);
+if ($stmt === false) {
+    die("Error al preparar la consulta: " . $cnx->error);
 }
-else{
+
+// 4. ENLAZAR PARÁMETROS Y TIPOS DE DATOS
+// Tipos: s=string, i=integer, d=double. Asumimos PriceReference, Listprice son strings o decimales.
+// Si Listprice es un número, podrías cambiar 's' por 'd' o 'i'.
+// Si Listprice es un decimal o float, es mejor usar 'd'
+$tipos = "sssssssi"; // s*6 (cadenas) + s (Listprice) + i (IDProducto)
+
+$stmt->bind_param($tipos, 
+    $PriceReference, 
+    $Currency, 
+    $ProductCode, 
+    $DescriptionLong1, 
+    $DescriptionLong2, 
+    $OrderUnit, 
+    $Listprice, // Debería ser un string 's' si es un decimal
+    $id
+);
+
+// 5. EJECUTAR LA SENTENCIA
+$ejecucion_exitosa = $stmt->execute();
+
+// 6. CERRAR Y REDIRECCIÓN
+if (!$ejecucion_exitosa) {
+    echo "No se actualizó. Error: " . $stmt->error;
+} else {
+    // Si la ejecución fue exitosa, pero no se afectó ninguna fila (ej. los datos no cambiaron),
+    // aún así consideramos la operación como "exitosa".
+    $stmt->close();
+    $cnx->close();
     header("Location: index.php");
+    exit(); // Es buena práctica usar exit() después de header()
 }
+
+$stmt->close();
+$cnx->close();
 ?>
