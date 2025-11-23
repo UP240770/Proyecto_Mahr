@@ -87,7 +87,8 @@ if (!$ejecucion_exitosa) {
     $stmt->close();
     $cnx->close();
     // Redirecciona a la misma página del formulario (asumiendo que el formulario está en el script principal)
-    header("Location: " . $_SERVER['PHP_SELF']);
+   // header("Location: " . $_SERVER['PHP_SELF']);
+
     exit(); 
 }
 

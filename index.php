@@ -10,7 +10,14 @@
 </head>
 <body>
 <div class="sidebar">
-        <div class="sidebar-item active" data-view="product-view">
+    <div class="sidebar-toggle">
+        <span class="material-icons">menu</span>
+    </div>
+        <div class="sidebar-item active" data-view="inicio-view">
+            <img src="https://img.icons8.com/ios-filled/50/ffffff/home.png" alt="Inicio">
+            <span>Inicio</span>
+        </div>
+        <div class="sidebar-item" data-view="product-view">
             <img src="https://img.icons8.com/ios-filled/50/ffffff/product.png" alt="Producto">
             <span>Producto</span>
         </div>
@@ -26,10 +33,58 @@
             <img src="https://img.icons8.com/ios-filled/50/ffffff/price-tag.png" alt="Generar Cotización">
             <span>Generar Cotización</span>
         </div>
+        
     </div>
 
-    <div class="main-content"> 
-        <div id="product-view" class="view active">
+    <div class="main-content">
+        <!-- VISTA DE INICIO -->
+        <div id="inicio-view" class="view active">
+            <div class="welcome-container">
+                <h1 class="welcome-title">¡Bienvenido al Sistema de Gestión!</h1>
+                <p class="welcome-subtitle">Gestiona tus productos, clientes y cotizaciones de manera eficiente</p>
+                <button class="generate-quote-btn" id="go-to-quotation-btn">
+                    <span class="material-icons" style="vertical-align: middle; margin-right: 8px;">add</span>
+                    Generar Cotización
+                </button>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="material-icons feature-icon">inventory_2</div>
+                    <div class="feature-title">Gestión de Productos</div>
+                    <div class="feature-description">
+                        Administra tu catálogo de productos, precios y descripciones de forma centralizada.
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="material-icons feature-icon">groups</div>
+                    <div class="feature-title">Gestión de Clientes</div>
+                    <div class="feature-description">
+                        Mantén organizada la información de tus clientes y su historial de contactos.
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="material-icons feature-icon">request_quote</div>
+                    <div class="feature-title">Cotizaciones</div>
+                    <div class="feature-description">
+                        Crea y gestiona cotizaciones profesionales para tus clientes de manera rápida.
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="material-icons feature-icon">analytics</div>
+                    <div class="feature-title">Reportes</div>
+                    <div class="feature-description">
+                        Genera reportes detallados de ventas, productos y rendimiento del negocio.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VISTA DE PRODUCTOS (manteniendo tu código original) -->
+        <div id="product-view" class="view">
             <div class="header">
                 <form action="php/buscar.php" method="post" id="product-search-form">
                     <div class="search-bar">
@@ -222,6 +277,7 @@ $rta = mysqli_query($cnx, $sql);
             </div>
         </div>
 
+        <!-- FORMULARIO DE NUEVO PRODUCTO (manteniendo tu código original) -->
         <div id="new-product-form-view" class="form-view">
             <form action="php/sp_insertar.php" method="post" enctype="multipart/form-data">
             <h2>Nuevo Producto</h2>
@@ -266,12 +322,8 @@ $rta = mysqli_query($cnx, $sql);
             </form>
         </div>
         
-    </div>
-
-<div>
-
-
-  <div id="client-view" class="view">
+        <!-- VISTA DE CLIENTES (manteniendo tu código original) -->
+        <div id="client-view" class="view">
             <div class="header">
                 <div class="search-bar">
                     <span class="material-icons">search</span>
@@ -387,12 +439,7 @@ $rta = mysqli_query($cnx, $sql);
             </div>
         </div>
 
-
-
-
-
-
-        
+        <!-- FORMULARIO DE NUEVO CLIENTE (manteniendo tu código original) -->
         <div id="new-client-form-view" class="form-view">
             <h2>Nuevo Cliente</h2>
             <div class="form-group">
@@ -420,9 +467,8 @@ $rta = mysqli_query($cnx, $sql);
                 <button type="button" class="form-button clear" id="clear-client-form">BORRAR CAMPOS</button>
             </div>
         </div>
-        
 
-
+        <!-- VISTA DE COTIZACIONES (manteniendo tu código original) -->
         <div id="quotation-view" class="view">
             <div class="header">
                 <div class="search-bar">
@@ -438,6 +484,7 @@ $rta = mysqli_query($cnx, $sql);
             </div>
         </div>
 
+        <!-- VISTA DE GENERAR COTIZACIÓN (manteniendo tu código original) -->
         <div id="generate-quotation-view" class="view">
             <div class="header">
                 <h2>Generar Cotización</h2>
@@ -479,6 +526,9 @@ if (isset($cnx)) {
             const clearProductFormButton = document.getElementById('clear-product-form');
             const cancelProductFormButton = document.getElementById('cancel-product-form');
             
+            // Botón para ir a generar cotización desde el inicio
+            const goToQuotationBtn = document.getElementById('go-to-quotation-btn');
+            
             // Formularios
             const newClientFormView = document.getElementById('new-client-form-view');
             const newProductFormView = document.getElementById('new-product-form-view');
@@ -513,6 +563,11 @@ if (isset($cnx)) {
                     const viewId = this.getAttribute('data-view');
                     switchView(viewId);
                 });
+            });
+            
+            // Evento para el botón "Generar Cotización" en la vista de inicio
+            goToQuotationBtn.addEventListener('click', function() {
+                switchView('generate-quotation-view');
             });
             
             // Mostrar formulario de nuevo cliente
@@ -555,11 +610,19 @@ if (isset($cnx)) {
                 document.querySelector('.sidebar-item[data-view="product-view"]').classList.add('active');
             });
 
-            // Al cargar, asegurarse de que la vista de productos esté activa si no hay otra definida
+            // Al cargar, asegurarse de que la vista de inicio esté activa
             if (!document.querySelector('.view.active')) {
-                 productView.classList.add('active');
+                 document.getElementById('inicio-view').classList.add('active');
             }
         });
+
+
+        const sidebarToggle = document.querySelector('.sidebar-toggle');
+const sidebar = document.querySelector('.sidebar');
+
+sidebarToggle.addEventListener('click', function() {
+    sidebar.classList.toggle('sidebar-collapsed');
+});
     </script>
 
 </body>
