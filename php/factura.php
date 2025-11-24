@@ -9,9 +9,18 @@ use Dompdf\Options;
 
 try {
     // Obtener datos del formulario
-    $titulo = $_POST['titulo'] ?? 'Documento PDF';
-    $nombre = $_POST['nombre'] ?? 'Usuario';
-    
+    $NombreEmpresa = $_POST['NombreEmpresa'] ?? 'NombreEmpresa';
+    $persona = $_POST['persona'] ?? 'PersonaAquienVaDirigido';
+    $direccion = $_POST['direccion'] ?? 'Direccion';
+    $EstadoLugar = $_POST['EstadoLugar'] ?? 'EstadoLugar';
+    $telefono = $_POST['telefono'] ?? 'telefono';
+    $email = $_POST['email'] ?? 'email';
+    $NumeroOrden = $_POST['NumeroOrden'] ?? 'NumeroDeOrden';
+    $TiempoEstimadoEntrega = $_POST['TiempoEntrega'] ?? 'TiempoEntrega';
+    $CodigoProduto = $_POST['codigo'] ?? 'codigo';
+    $DesscuentoAplicar = $_POST['descuento'] ?? 'Descuento';
+    $cantidadItems = $_POST['cantItems'] ?? 'CantItems';
+    $Imagen = $_FILES['imagen'] ?? 'imagen';
     // Configurar DomPDF
     $options = new Options();
     $options->set('isHtml5ParserEnabled', true);
@@ -320,13 +329,13 @@ body {
 
     <!-- DATOS  EDITABLES -->
     <div style="font-size:13px; line-height:1.3;" contenteditable="true">
-        AAM MAQUILADORA MEXICO S. de R.L. de C.V.<br>
-        attn. Abhram Israel Aviña Castañeda<br>
-        Av. Comerciantes 1300, Parque Industrial FIPASI<br>
+        ' . htmlspecialchars($NombreEmpresa) . '<br>
+        attn. ' . htmlspecialchars($persona) . '<br>
+        ' . htmlspecialchars($direccion) . ' <br>
         Carr. Silao-Irapuato km 5.3<br>
-        Silao, Gto. 36100<br>
-        Phone: 52 (472) 7229532 &nbsp;&nbsp;&nbsp;  <br>
-        E-Mail:AbrahamIsrael.Avina@aam.com
+        ' . htmlspecialchars($EstadoLugar) . '<br>
+        Phone: ' . htmlspecialchars($telefono) . ' &nbsp;&nbsp;&nbsp;  <br>
+        E-Mail: ' . htmlspecialchars($email) . '
     </div>
 
     <br>
@@ -356,11 +365,11 @@ body {
 
        
         <tr>
-            <td>1</td>
-            <td contenteditable="true">2033011</td>
+            <td> 1</td>
+            <td contenteditable="true">' . htmlspecialchars($CodigoProduto) . '</td>
             <td contenteditable="true">
                 REMOTE INDICATING UNIT, MAXUM3 WITH DATA OUTPUT - 6PIN<br><br>
-                <span style="color:red; font-weight:bold;">****Estimated delivery time 16 - 22 Weeks *****</span><br><br>
+                <span style="color:red; font-weight:bold;">****' . htmlspecialchars($TiempoEstimadoEntrega) . '*****</span><br><br>
 
                 <!-- Imagen que tú colocarás -->
                 <img src="https://i.imgur.com/NcQAkmw.png" style="width:220px; display:block; margin:auto;">
@@ -369,7 +378,7 @@ body {
 
 
             </td>
-            <td contenteditable="true">1</td>
+            <td contenteditable="true">' . htmlspecialchars($cantidadItems) . '</td>
             <td contenteditable="true">$696.60</td>
             <td contenteditable="true">$696.60</td>
         </tr>

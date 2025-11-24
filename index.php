@@ -83,7 +83,7 @@
             </div>
         </div>
 
-        <!-- VISTA DE PRODUCTOS (manteniendo tu código original) -->
+        <!-- VISTA DE PRODUCTOS -->
         <div id="product-view" class="view">
             <div class="header">
                 <form action="php/buscar.php" method="post" id="product-search-form">
@@ -493,7 +493,73 @@ $rta = mysqli_query($cnx, $sql);
                 <div class="table-header">
                     Generar Nueva Cotización
                 </div>
-                <p style="padding: 20px; text-align: center;">Formulario para generar cotización aquí</p>
+
+
+                  <!-- FORMULARIO DE NUEVO PRODUCTO (manteniendo tu código original) -->
+        <center>
+            <form action="php/factura.php" method="post" enctype="multipart/form-data">
+            <h2>Nueva Cotizacion</h2>
+            <div class="form-group">
+                <label for="ref-price">Nombre de empresa</label>
+                <input type="text" name="NombreEmpresa" id="NombreEmpresa" required="">
+            </div>
+            <div class="form-group">
+                <label for="currency">Nombre de persona</label>
+                <input type="text" name="persona" id="persona">
+            </div>
+            <div class="form-group">
+                <label for="product-code">Direccion</label>
+                <input type="number" name="direccion" id="direccion">
+            </div>
+            <div class="form-group">
+                <label for="desc-long1">Estado / Lugar</label>
+                <input type="text" name="EstadoLugar" id="desc-long1"> 
+            </div>
+            <div class="form-group">
+                <label for="desc-long2">Telefono</label>
+                 <input type="text" name="telefono" id="telefono">
+            </div>
+            <div class="form-group">
+                <label for="order-unit">Email</label>
+                <input type="email" name="email" id="email">
+            </div>
+            <div class="form-group">
+                <label for="list-price">Numero de orden</label>
+                <input type="text" name="NumeroOrden" id="list-price">
+            </div>
+            <div class="form-group">
+                <label for="num-orden">Tiempo estimado de entrega</label>
+                <input type="text" name="TiempoEntrega" id="TiempoEntrega">
+            </div>
+            <div class="form-group">
+                <label for="num-orden">Codigo del producto</label>
+                <input type="text" name="codigo" id="codigo">
+            </div>
+            <div class="form-group">
+                <label for="num-orden">Descuento a aplicar (Si no aplica ignorar)</label>
+                <input type="text" name="descuento" id="cantItems">
+            </div>
+            <div class="form-group">
+                <label for="num-orden">Cantidad de items</label>
+                <input type="text" name="cantItems" id="cantItems">
+            </div>
+             <div class="form-group">
+                <label for="num-orden">Imagen</label>
+                <input type="file" name="imagen" id="imagen">
+            </div>
+            <center>
+            <div class="form-buttons">
+                <button type="submit" value="Guardar" class="form-button" id="submit-product-form">ENVIAR</button>
+                <button type="button" class="form-button clear" id="clear-product-form">BORRAR CAMPOS</button>
+                <button type="button" class="form-button clear" id="cancel-product-form"> Cancelar </button>
+            </div>
+            </center>
+            </form>
+        </center>
+
+
+
+                
             </div>
         </div>
     </div>
@@ -623,6 +689,13 @@ const sidebar = document.querySelector('.sidebar');
 sidebarToggle.addEventListener('click', function() {
     sidebar.classList.toggle('sidebar-collapsed');
 });
+
+
+const urlParams = new URLSearchParams(window.location.search);
+const vistaParam = urlParams.get('vista');
+
+
+
     </script>
 
 </body>

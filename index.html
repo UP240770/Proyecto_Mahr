@@ -83,7 +83,7 @@
             </div>
         </div>
 
-        <!-- VISTA DE PRODUCTOS (manteniendo tu código original) -->
+        <!-- VISTA DE PRODUCTOS -->
         <div id="product-view" class="view">
             <div class="header">
                 <form action="php/buscar.php" method="post" id="product-search-form">
@@ -618,11 +618,18 @@ if (isset($cnx)) {
 
 
         const sidebarToggle = document.querySelector('.sidebar-toggle');
-        const sidebar = document.querySelector('.sidebar');
+const sidebar = document.querySelector('.sidebar');
 
-        sidebarToggle.addEventListener('click', function() {
-            sidebar.classList.toggle('sidebar-collapsed');
-        });
+sidebarToggle.addEventListener('click', function() {
+    sidebar.classList.toggle('sidebar-collapsed');
+});
+
+
+const urlParams = new URLSearchParams(window.location.search);
+const vistaParam = urlParams.get('vista');
+
+
+
     </script>
 
 </body>
