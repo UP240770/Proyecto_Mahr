@@ -7,6 +7,54 @@
     <title>Gatos en el plantel</title>
     <link rel="stylesheet" href="css/style.css"> 
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <style>
+        .client-form {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .client-form h2 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .client-form .form-group {
+            margin-bottom: 15px;
+        }
+
+        .client-form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .client-form input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .checkbox-container {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .checkbox-container label {
+            display: inline-block;
+            margin-left: 8px;
+            cursor: pointer;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            width: auto;
+            transform: scale(1.2);
+        }
+    </style>
 </head>
 <body>
 <div class="sidebar">
@@ -277,7 +325,7 @@ $rta = mysqli_query($cnx, $sql);
             </div>
         </div>
 
-        <!-- FORMULARIO DE NUEVO PRODUCTO (manteniendo tu código original) -->
+        <!-- FORMULARIO DE NUEVO PRODUCTO -->
         <div id="new-product-form-view" class="form-view">
             <form action="php/sp_insertar.php" method="post" enctype="multipart/form-data">
             <h2>Nuevo Producto</h2>
@@ -322,7 +370,7 @@ $rta = mysqli_query($cnx, $sql);
             </form>
         </div>
         
-        <!-- VISTA DE CLIENTES (manteniendo tu código original) -->
+        <!-- VISTA DE CLIENTES -->
         <div id="client-view" class="view">
             <div class="header">
                 <div class="search-bar">
@@ -439,7 +487,7 @@ $rta = mysqli_query($cnx, $sql);
             </div>
         </div>
 
-        <!-- FORMULARIO DE NUEVO CLIENTE (manteniendo tu código original) -->
+        <!-- FORMULARIO DE NUEVO CLIENTE -->
         <div id="new-client-form-view" class="form-view">
             <h2>Nuevo Cliente</h2>
             <div class="form-group">
@@ -468,7 +516,7 @@ $rta = mysqli_query($cnx, $sql);
             </div>
         </div>
 
-        <!-- VISTA DE COTIZACIONES (manteniendo tu código original) -->
+        <!-- VISTA DE COTIZACIONES -->
         <div id="quotation-view" class="view">
             <div class="header">
                 <div class="search-bar">
@@ -484,7 +532,7 @@ $rta = mysqli_query($cnx, $sql);
             </div>
         </div>
 
-        <!-- VISTA DE GENERAR COTIZACIÓN (manteniendo tu código original) -->
+        <!-- VISTA DE GENERAR COTIZACIÓN -->
         <div id="generate-quotation-view" class="view">
             <div class="header">
                 <h2>Generar Cotización</h2>
@@ -493,7 +541,109 @@ $rta = mysqli_query($cnx, $sql);
                 <div class="table-header">
                     Generar Nueva Cotización
                 </div>
-                <p style="padding: 20px; text-align: center;">Formulario para generar cotización aquí</p>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" name="existe" id="existe" onchange="toggleClientForm()">
+                    <label for="existe">¿Cliente existente?</label>
+                </div>
+
+                <!-- Formulario para cliente EXISTENTE -->
+                <div id="form-cliente-existente" class="client-form">
+                    <form action="php/factura.php" method="post" enctype="multipart/form-data">
+                        <h2>Cotización - Cliente Existente</h2>
+                        <div class="form-group">
+                            <label for="NombreEmpresaExistente">Nombre de empresa</label>
+                            <input type="text" name="NombreEmpresa" id="NombreEmpresaExistente" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="personaExistente">Nombre de persona</label>
+                            <input type="text" name="persona" id="personaExistente" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="NumeroOrdenExistente">Número de orden</label>
+                            <input type="text" name="NumeroOrden" id="NumeroOrdenExistente" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="TiempoEntregaExistente">Tiempo estimado de entrega</label>
+                            <input type="text" name="TiempoEntrega" id="TiempoEntregaExistente" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="codigoExistente">Código del producto</label>
+                            <input type="text" name="codigo" id="codigoExistente" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="descuentoExistente">Descuento a aplicar (Si no aplica, dejar vacío)</label>
+                            <input type="text" name="descuento" id="descuentoExistente">
+                        </div>
+                        <div class="form-group">
+                            <label for="cantItemsExistente">Cantidad de items</label>
+                            <input type="text" name="cantItems" id="cantItemsExistente" required>
+                        </div>
+                        
+                        <div class="form-buttons">
+                            <button type="submit" class="form-button">ENVIAR</button>
+                            <button type="button" class="form-button clear" onclick="clearForm('form-cliente-existente')">BORRAR CAMPOS</button>
+                            <button type="button" class="form-button clear" onclick="cancelQuotation()">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Formulario para cliente NUEVO -->
+                <div id="form-cliente-nuevo" class="client-form" style="display: none;">
+                    <form action="php/factura.php" method="post" enctype="multipart/form-data">
+                        <h2>Cotización - Cliente Nuevo</h2>
+                        <div class="form-group">
+                            <label for="NombreEmpresaNuevo">Nombre de empresa</label>
+                            <input type="text" name="NombreEmpresa" id="NombreEmpresaNuevo" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="personaNuevo">Nombre de persona</label>
+                            <input type="text" name="persona" id="personaNuevo" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="direccionNuevo">Dirección</label>
+                            <input type="text" name="direccion" id="direccionNuevo" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="EstadoLugarNuevo">Estado / Lugar</label>
+                            <input type="text" name="EstadoLugar" id="EstadoLugarNuevo" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="telefonoNuevo">Teléfono</label>
+                            <input type="text" name="telefono" id="telefonoNuevo" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="emailNuevo">Email</label>
+                            <input type="email" name="email" id="emailNuevo" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="NumeroOrdenNuevo">Número de orden</label>
+                            <input type="text" name="NumeroOrden" id="NumeroOrdenNuevo" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="TiempoEntregaNuevo">Tiempo estimado de entrega</label>
+                            <input type="text" name="TiempoEntrega" id="TiempoEntregaNuevo" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="codigoNuevo">Código del producto</label>
+                            <input type="text" name="codigo" id="codigoNuevo" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="descuentoNuevo">Descuento a aplicar (Si no aplica, dejar vacío)</label>
+                            <input type="text" name="descuento" id="descuentoNuevo">
+                        </div>
+                        <div class="form-group">
+                            <label for="cantItemsNuevo">Cantidad de items</label>
+                            <input type="text" name="cantItems" id="cantItemsNuevo" required>
+                        </div>
+                        
+                        <div class="form-buttons">
+                            <button type="submit" class="form-button">ENVIAR</button>
+                            <button type="button" class="form-button clear" onclick="clearForm('form-cliente-nuevo')">BORRAR CAMPOS</button>
+                            <button type="button" class="form-button clear" onclick="cancelQuotation()">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -610,25 +760,71 @@ if (isset($cnx)) {
                 document.querySelector('.sidebar-item[data-view="product-view"]').classList.add('active');
             });
 
+            // Inicializar el estado de los formularios de cotización
+            toggleClientForm();
+
             // Al cargar, asegurarse de que la vista de inicio esté activa
             if (!document.querySelector('.view.active')) {
                  document.getElementById('inicio-view').classList.add('active');
             }
         });
 
-
         const sidebarToggle = document.querySelector('.sidebar-toggle');
-const sidebar = document.querySelector('.sidebar');
+        const sidebar = document.querySelector('.sidebar');
 
-sidebarToggle.addEventListener('click', function() {
-    sidebar.classList.toggle('sidebar-collapsed');
-});
+        sidebarToggle.addEventListener('click', function() {
+            sidebar.classList.toggle('sidebar-collapsed');
+        });
 
+        const urlParams = new URLSearchParams(window.location.search);
+        const vistaParam = urlParams.get('vista');
 
-const urlParams = new URLSearchParams(window.location.search);
-const vistaParam = urlParams.get('vista');
+        // Función para alternar entre formularios de cliente
+        function toggleClientForm() {
+            const checkbox = document.getElementById('existe');
+            const formExistente = document.getElementById('form-cliente-existente');
+            const formNuevo = document.getElementById('form-cliente-nuevo');
+            
+            if (checkbox.checked) {
+                // Cliente existente
+                formExistente.style.display = 'block';
+                formNuevo.style.display = 'none';
+            } else {
+                // Cliente nuevo
+                formExistente.style.display = 'none';
+                formNuevo.style.display = 'block';
+            }
+        }
 
+        // Función para limpiar formularios
+        function clearForm(formId) {
+            const form = document.getElementById(formId);
+            const inputs = form.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.value = '';
+            });
+        }
 
+        // Función para cancelar y volver al inicio
+        function cancelQuotation() {
+            // Ocultar todas las vistas
+            const views = document.querySelectorAll('.view');
+            views.forEach(view => {
+                view.classList.remove('active');
+            });
+            
+            // Mostrar la vista de inicio
+            document.getElementById('inicio-view').classList.add('active');
+            
+            // Actualizar estado activo en el sidebar
+            const sidebarItems = document.querySelectorAll('.sidebar-item');
+            sidebarItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('data-view') === 'inicio-view') {
+                    item.classList.add('active');
+                }
+            });
+        }
 
     </script>
 
