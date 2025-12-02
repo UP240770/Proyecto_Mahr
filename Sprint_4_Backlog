@@ -1,0 +1,28 @@
+ Sprint 4 – Backlog
+
+Objetivo del Sprint: Pulir el sistema, agregar roles/permisos y reportes finales.
+
+ Historias comprometidas
+
+| ID   | Historia                                      
+|----  |-----------------------------------------------
+| HU11 | Usuarios con diferentes roles 
+| HU12 | Reporte final de inventario y cotizaciones 
+| HU9  | Mejora de interfaz y corrección de detalles
+
+Tareas principales
+
+HU11 – Roles
+- Agregar campo de rol a la tabla de usuarios.
+- Restringir acceso a ciertas pantallas según rol.
+- Pruebas de acceso correcto/incorrecto.
+
+HU12 – Reportes
+- Generar reporte de inventario.
+- Generar reporte de cotizaciones.
+- Imprimir/exportar reportes.
+
+HU9 – UI final
+- Mejorar estilos, tamaños de texto y alineaciones.
+- Revisar mensajes al usuario.
+- Corrección de bugs visuales detectados en la revisión.
