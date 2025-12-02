@@ -1,0 +1,19 @@
+Product Backlog – Proyecto “Cotizador y Control de Inventario”
+
+> Visión: Digitalizar y automatizar el proceso de cotización e inventario de MAHR CORPORATION de México para reducir tiempos de elaboración de cotizaciones y mejorar el control de existencias.
+
+| ID   | Historia de usuario                                                                                                         | Prioridad | Estimación (pts) | Sprint sugerido |
+|----  |-----------------------------------------------------------------------------------------------------------------------------|-----------|------------------|-----------------|
+| HU1  | Como gerente, quiero iniciar sesión en el sistema para que solo personal autorizado acceda a la información.                | Alta      | 5                | 1               |
+| HU2  | Como gerente, quiero registrar productos (nombre, código, precio, existencia) para generar cotizaciones precisas.           | Alta      | 8                | 1               |
+| HU3  | Como gerente, quiero consultar el catálogo de productos para seleccionar fácilmente los que incluiré en una cotización.     | Alta      | 5                | 1               |
+| HU4  | Como gerente, quiero generar una cotización seleccionando productos y cantidades para reducir el tiempo del proceso.        | Muy alta  | 13               | 2               |
+| HU5  | Como gerente, quiero guardar e imprimir/exportar las cotizaciones para entregarlas al cliente.                              | Alta      | 8                | 2               |
+| HU6  | Como gerente, quiero registrar entradas y salidas de inventario para mantener actualizadas las existencias.                 | Alta      | 8                | 3               |
+| HU7  | Como gerente, quiero ver un reporte rápido de existencias bajas para tomar decisiones de compra.                            | Media     | 5                | 3               |
+| HU8  | Como gerente, quiero consultar el historial de cotizaciones realizadas para dar seguimiento a los clientes.                 | Media     | 5                | 3               |
+| HU9  | Como usuario del sistema, quiero una interfaz sencilla y clara para que el aprendizaje sea rápido.                          | Media     | 3                | 1–4 (iterativo) |
+| HU10 | Como gerente, quiero que el sistema valide datos obligatorios para evitar errores de captura.                               | Media     | 3                | 2–3             |
+| HU11 | Como equipo, quiero registrar usuarios con diferentes roles (admin / consulta) para controlar permisos.                     | Baja      | 5                | 4               |
+| HU12 | Como gerente, quiero generar un reporte simple (PDF/impreso) de inventario y cotizaciones para reuniones.                   | Baja      | 5                | 4               |
+
