@@ -1,0 +1,31 @@
+Roles Scrum – Proyecto “Cotizador y Control de Inventario”
+
+Product Owner
+Nombre:Olivia Lizbeth Chairez Alba  
+Responsabilidades principales:
+- Definir y comunicar la visión del producto (sistema de cotización e inventario para MAHR).
+- Priorizar el Product Backlog de acuerdo con las necesidades del cliente.
+- Aclarar dudas del equipo sobre requerimientos y criterios de aceptación.
+- Aceptar o rechazar el trabajo completado en cada Sprint.
+
+ Scrum Master
+Nombre: Alan Ricardo Jauregui de la Riva  
+Responsabilidades principales:
+- Asegurar que el equipo siga el marco de trabajo Scrum.
+- Facilitar las ceremonias: Sprint Planning, Daily Scrum, Sprint Review y Retrospective.
+- Remover impedimentos que frenen al equipo.
+- Fomentar la mejora continua y la buena comunicación.
+
+Development Team
+Equipo multidisciplinario responsable de diseñar, programar, probar e implementar el sistema.
+
+- Omar – Desarrollo backend / lógica de negocio.
+- Noé – Desarrollo backend / base de datos.
+- Jorge– Desarrollo frontend / maquetado.
+- José – Desarrollo frontend / pruebas y documentación técnica.
+
+Responsabilidades generales del equipo:
+- Estimar las historias de usuario.
+- Comprometerse con un objetivo de Sprint alcanzable.
+- Desarrollar, probar e integrar funcionalidades hasta cumplir la Definition of Done.
+- Mantener el código versionado en Git y actualizado en GitHub.
