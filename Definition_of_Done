@@ -1,0 +1,24 @@
+ Definition of Done  – Proyecto MAHR
+
+Una historia de usuario se considera terminada solo si cumple TODAS las siguientes condiciones:
+
+1. Código
+   - El código compila y se ejecuta sin errores.
+   - No se dejan mensajes de depuración innecesarios (console.log, prints, etc.).
+   - El código está subido al repositorio Git en la rama correspondiente.
+
+2. Pruebas
+   - Se ha probado la funcionalidad en los casos más comunes.
+   - No rompe funcionalidades anteriores visibles (pruebas básicas de regresión).
+
+3. Git / Ramas
+   - Los cambios están confirmados con un **commit descriptivo.
+   - La rama de funcionalidad se ha fusionado con `dev` mediante Pull Request (o merge local) revisado por al menos un compañero.
+   - `dev` está sincronizada con los últimos cambios aprobados.
+
+4. Documentación
+   - La historia de usuario tiene actualizados sus criterios de aceptación como “cumplidos”.
+   - Si hubo cambios importantes en la interfaz, se actualizan las capturas o notas en la documentación.
+
+5. Producto
+   - El Product Owner (Olivia) revisó la funcionalidad y la **aceptó** durante la revisión del Sprint.
