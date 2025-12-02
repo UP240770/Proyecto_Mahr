@@ -1,0 +1,53 @@
+ Manual Técnico de Uso de Git en Entorno Colaborativo
+Proyecto: Cotizador y Control de Inventario – MAHR CORPORATION de México
+
+ 1. Datos del proyecto y del equipo
+
+- Institución: Universidad Politécnica de Aguascalientes  
+- Programa:Ingeniería en Tecnologías de la Información e Innovación Digital  
+- Proyecto:Cotizador y Control de Inventario  
+- Periodo de ejecución: 1 de septiembre de 2025 al 1 de diciembre de 2025   
+
+Integrantes y roles:
+
+- Olivia Lizbeth Chairez Alba – Product Owner  
+- Alan Ricardo Jauregui de la Riva – Scrum Master  
+- Omar – Development Team  
+- Noé – Development Team  
+- Jorge – Development Team  
+- José – Development Team  
+
+Repositorio remoto:  
+- Plataforma: GitHub  
+- URL: `https://github.com/UP240770/Proyecto_Mahr`
+
+---
+
+ 2. Introducción a Git
+
+> Git es un sistema de control de versiones distribuido que permite a varios desarrolladores trabajar sobre el mismo proyecto de software,
+manteniendo un historial de cambios, ramas de desarrollo y la posibilidad de regresar a versiones anteriores del código.
+
+Objetivos del uso de Git en el proyecto:
+- Llevar un historial claro de cambios.
+- Facilitar el trabajo colaborativo entre los 6 integrantes.
+- Evitar pérdidas de código y conflictos de versiones.
+- Generar evidencia de trabajo para la metodología Scrum.
+
+---
+
+ 3. Instalación y configuración básica
+
+ 3.1 Instalación de Git
+
+1. Descargar desde el sitio oficial.  
+2. Ejecutar el instalador y aceptar las opciones por defecto.  
+3. Verificar la instalación:
+
+```bash
+git --version
+
+ 3.2
+git config --global user.name "Nombre Apellido"
+git config --global user.email "correo@ejemplo.com"
+
