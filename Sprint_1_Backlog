@@ -7,18 +7,10 @@ Objetivo del Sprint: Tener la base del sistema: estructura del proyecto, conexi�
 
 | ID | Historia | Pts | Criterios de aceptación resumidos |
 |-----|-------------------------------------|---|-------------------------------------------------------------------------------------------------|
-| HU1 | Inicio de sesión básico             | 5 | Formulario de usuario/contraseña; si las credenciales son correctas entra al sistema.           |
-| HU2 | Registro de productos               | 8 | Alta, baja y modificación de productos; datos obligatorios: nombre, código, precio, existencia. |
+| HU2 | Registro de productos               | 8 | Alta, baja y modificación de productos; datos obligatorios: nombre, código, precio.             |
 | HU9 | Interfaz sencilla (versión inicial) | 3 | Pantallas con menú principal y navegación básica entre módulos.                                 |
 
  Tareas por historia
-
- HU1 – Inicio de sesión
-- Diseñar tabla de usuarios en la base de datos.
-- Crear formulario de login en frontend.
-- Programar validación de usuario/contraseña.
-- Redirigir a pantalla principal si el login es correcto.
-- Probar login con usuario de prueba.
 
  HU2 – Registro de productos
 - Diseñar tabla de productos (campos, tipos de datos).
