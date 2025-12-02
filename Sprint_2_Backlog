@@ -1,0 +1,29 @@
+ Sprint 2 – Backlog
+
+Objetivo del Sprint: Permitir generar cotizaciones completas y almacenarlas.
+
+Historias comprometidas
+
+| ID   | Historia                                     
+|------|----------------------------------------------
+| HU4  | Generar cotización con productos y cantidades 
+| HU5  | Guardar e imprimir/exportar cotización        
+| HU10 | Validaciones de datos en cotización           
+
+Tareas principales
+
+HU4 – Generar cotización
+- Diseñar modelo de cotización y detalle de productos.
+- Pantalla para elegir cliente (si se usa) y productos.
+- Cálculo automático de subtotal, IVA y total.
+- Guardar cotización en la base de datos.
+
+HU5 – Guardar e imprimir
+- Pantalla de vista previa de cotización.
+- Opción de imprimir o descargar (PDF o impresión del navegador).
+- Pruebas con distintas combinaciones de productos.
+
+HU10 – Validaciones
+- No permitir cotizaciones sin productos.
+- Validar que las cantidades sean mayores a cero.
+- Mensajes de error claros al usuario.
