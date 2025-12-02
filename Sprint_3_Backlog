@@ -1,0 +1,28 @@
+Sprint 3 – Backlog
+
+Objetivo del Sprint:Implementar el control de inventario y reportes básicos.
+
+ Historias comprometidas
+
+| ID  | Historia 
+|---- |--------------------------------------------
+| HU6 | Registro de entradas y salidas de inventario 
+| HU7 | Reporte de existencias bajas 
+| HU8 | Historial de cotizaciones 
+
+ Tareas principales
+
+HU6 – Entradas y salidas
+- Crear interfaz para registrar movimientos de inventario.
+- Actualizar existencias de producto automáticamente.
+- Registrar fecha, tipo de movimiento y cantidad.
+
+HU7 – Existencias bajas
+- Definir umbral de existencia mínima.
+- Listar productos por debajo del umbral.
+- Mostrar reporte en pantalla.
+
+HU8 – Historial de cotizaciones
+- Pantalla con listado de cotizaciones.
+- Filtros por fecha / cliente (si aplica).
+- Opción de consultar el detalle de una cotización.
