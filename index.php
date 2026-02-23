@@ -55,7 +55,6 @@
             transform: scale(1.2);
         }
         
-        /* Estilos para la paginación */
         .pagination {
             display: flex;
             justify-content: center;
@@ -92,287 +91,355 @@
             background-color: #e9ecef;
         }
 
-        /* Estilos para los formularios de cotización */
         .quotation-form {
             transition: all 0.3s ease;
+        }
+        
+        .view {
+            display: none;
+        }
+        
+        .view.active {
+            display: block;
+        }
+        
+        .form-view {
+            display: none;
+        }
+        
+        .form-view[style*="display: flex"] {
+            display: flex !important;
         }
     </style>
 </head>
 <body>
+<?php
+// ===== CONFIGURACIÓN DE ERRORES =====
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+// ===== CONEXIÓN A LA BASE DE DATOS =====
+$cnx = mysqli_connect("localhost", "root", "", "mahr");
+
+if (!$cnx) {
+    die("<div style='background: #f8d7da; color: #721c24; padding: 20px; margin: 20px; border-radius: 5px;'>
+            <strong>❌ Error de conexión:</strong> " . mysqli_connect_error() . "
+         </div>");
+}
+
+mysqli_set_charset($cnx, "utf8");
+
+// ===== LÓGICA DE PAGINACIÓN PARA PRODUCTOS =====
+$elementos_pagina_productos = 5;
+
+// Obtener página actual (por defecto 1)
+$pagina_actual_productos = isset($_GET['pagina_productos']) ? (int)$_GET['pagina_productos'] : 1;
+$pagina_actual_productos = max(1, $pagina_actual_productos);
+
+// Calcular inicio (nunca negativo)
+$inicio_productos = max(0, ($pagina_actual_productos - 1) * $elementos_pagina_productos);
+
+// Total de productos
+$sql_total_productos = "SELECT COUNT(*) AS total FROM productos";
+$resultado_total_productos = mysqli_query($cnx, $sql_total_productos);
+
+if (!$resultado_total_productos) {
+    die("Error en consulta total productos: " . mysqli_error($cnx));
+}
+
+$fila_total_productos = mysqli_fetch_assoc($resultado_total_productos);
+$total_elementos_productos = $fila_total_productos['total'];
+$total_paginas_productos = ceil($total_elementos_productos / $elementos_pagina_productos);
+
+// Ajustar si no hay páginas o la página actual es mayor al total
+if ($total_paginas_productos == 0) {
+    $pagina_actual_productos = 1;
+    $inicio_productos = 0;
+} elseif ($pagina_actual_productos > $total_paginas_productos) {
+    $pagina_actual_productos = $total_paginas_productos;
+    $inicio_productos = max(0, ($pagina_actual_productos - 1) * $elementos_pagina_productos);
+}
+
+// Consulta de productos con LIMIT
+$sql_productos = "SELECT IDProducto, PriceReference, Currency, ProductCode, DescriptionLong1, DescriptionLong2, OrderUnit, Listprice, NumeroOrden 
+        FROM productos 
+        ORDER BY IDProducto DESC 
+        LIMIT $inicio_productos, $elementos_pagina_productos";
+
+$rta_productos = mysqli_query($cnx, $sql_productos);
+
+if (!$rta_productos) {
+    die("Error en consulta productos: " . mysqli_error($cnx));
+}
+
+// ===== LÓGICA DE PAGINACIÓN PARA CLIENTES =====
+$elementos_pagina_clientes = 5;
+
+// Obtener página actual (por defecto 1)
+$pagina_actual_clientes = isset($_GET['pagina_clientes']) ? (int)$_GET['pagina_clientes'] : 1;
+$pagina_actual_clientes = max(1, $pagina_actual_clientes);
+
+// Calcular inicio (nunca negativo)
+$inicio_clientes = max(0, ($pagina_actual_clientes - 1) * $elementos_pagina_clientes);
+
+// Total de clientes
+$sql_total_clientes = "SELECT COUNT(*) AS total FROM cliente";
+$resultado_total_clientes = mysqli_query($cnx, $sql_total_clientes);
+
+if (!$resultado_total_clientes) {
+    die("Error en consulta total clientes: " . mysqli_error($cnx));
+}
+
+$fila_total_clientes = mysqli_fetch_assoc($resultado_total_clientes);
+$total_elementos_clientes = $fila_total_clientes['total'];
+$total_paginas_clientes = ceil($total_elementos_clientes / $elementos_pagina_clientes);
+
+// Ajustar si no hay páginas o la página actual es mayor al total
+if ($total_paginas_clientes == 0) {
+    $pagina_actual_clientes = 1;
+    $inicio_clientes = 0;
+} elseif ($pagina_actual_clientes > $total_paginas_clientes) {
+    $pagina_actual_clientes = $total_paginas_clientes;
+    $inicio_clientes = max(0, ($pagina_actual_clientes - 1) * $elementos_pagina_clientes);
+}
+
+// Consulta de clientes con LIMIT
+$sql_clientes = "SELECT IDCliente, NombreEmpresa, AttnCliente, Direccion, Phone, Email 
+        FROM cliente
+        ORDER BY IDCliente DESC 
+        LIMIT $inicio_clientes, $elementos_pagina_clientes";
+
+$rta_clientes = mysqli_query($cnx, $sql_clientes);
+
+if (!$rta_clientes) {
+    die("Error en consulta clientes: " . mysqli_error($cnx));
+}
+?>
+
 <div class="sidebar">
     <div class="sidebar-toggle">
         <span class="material-icons">menu</span>
     </div>
-        <div class="sidebar-item active" data-view="inicio-view">
-            <img src="https://img.icons8.com/ios-filled/50/ffffff/home.png" alt="Inicio">
-            <span>Inicio</span>
+    <div class="sidebar-item active" data-view="inicio-view">
+        <img src="https://img.icons8.com/ios-filled/50/ffffff/home.png" alt="Inicio">
+        <span>Inicio</span>
+    </div>
+    <div class="sidebar-item" data-view="product-view">
+        <img src="https://img.icons8.com/ios-filled/50/ffffff/product.png" alt="Producto">
+        <span>Producto</span>
+    </div>
+    <div class="sidebar-item" data-view="quotation-view">
+        <img src="https://img.icons8.com/ios-filled/50/ffffff/bill.png" alt="Cotización">
+        <span>Cotización</span>
+    </div>
+    <div class="sidebar-item" data-view="client-view">
+        <img src="https://img.icons8.com/ios-filled/50/ffffff/group.png" alt="Clientes">
+        <span>Clientes</span>
+    </div>
+    <div class="sidebar-item" data-view="generate-quotation-view">
+        <img src="https://img.icons8.com/ios-filled/50/ffffff/price-tag.png" alt="Generar Cotización">
+        <span>Generar Cotización</span>
+    </div>
+</div>
+
+<div class="main-content">
+    <!-- VISTA DE INICIO -->
+    <div id="inicio-view" class="view active">
+        <div class="welcome-container">
+            <h1 class="welcome-title">¡Bienvenido al Sistema de Gestión!</h1>
+            <p class="welcome-subtitle">Gestiona tus productos, clientes y cotizaciones de manera eficiente</p>
+            <button class="generate-quote-btn" id="go-to-quotation-btn">
+                <span class="material-icons" style="vertical-align: middle; margin-right: 8px;">add</span>
+                Generar Cotización
+            </button>
         </div>
-        <div class="sidebar-item" data-view="product-view">
-            <img src="https://img.icons8.com/ios-filled/50/ffffff/product.png" alt="Producto">
-            <span>Producto</span>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="material-icons feature-icon">inventory_2</div>
+                <div class="feature-title">Gestión de Productos</div>
+                <div class="feature-description">
+                    Administra tu catálogo de productos, precios y descripciones de forma centralizada.
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="material-icons feature-icon">groups</div>
+                <div class="feature-title">Gestión de Clientes</div>
+                <div class="feature-description">
+                    Mantén organizada la información de tus clientes y su historial de contactos.
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="material-icons feature-icon">request_quote</div>
+                <div class="feature-title">Cotizaciones</div>
+                <div class="feature-description">
+                    Crea y gestiona cotizaciones profesionales para tus clientes de manera rápida.
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="material-icons feature-icon">analytics</div>
+                <div class="feature-title">Reportes</div>
+                <div class="feature-description">
+                    Genera reportes detallados de ventas, productos y rendimiento del negocio.
+                </div>
+            </div>
         </div>
-        <div class="sidebar-item" data-view="quotation-view">
-            <img src="https://img.icons8.com/ios-filled/50/ffffff/bill.png" alt="Cotización">
-            <span>Cotización</span>
-        </div>
-        <div class="sidebar-item" data-view="client-view">
-            <img src="https://img.icons8.com/ios-filled/50/ffffff/group.png" alt="Clientes">
-            <span>Clientes</span>
-        </div>
-        <div class="sidebar-item" data-view="generate-quotation-view">
-            <img src="https://img.icons8.com/ios-filled/50/ffffff/price-tag.png" alt="Generar Cotización">
-            <span>Generar Cotización</span>
-        </div>
-        
     </div>
 
-    <div class="main-content">
-        <!-- VISTA DE INICIO -->
-        <div id="inicio-view" class="view active">
-            <div class="welcome-container">
-                <h1 class="welcome-title">¡Bienvenido al Sistema de Gestión!</h1>
-                <p class="welcome-subtitle">Gestiona tus productos, clientes y cotizaciones de manera eficiente</p>
-                <button class="generate-quote-btn" id="go-to-quotation-btn">
-                    <span class="material-icons" style="vertical-align: middle; margin-right: 8px;">add</span>
-                    Generar Cotización
-                </button>
+    <!-- VISTA DE PRODUCTOS -->
+    <div id="product-view" class="view">
+        <div class="header">
+            <form action="php/buscar.php" method="post" id="product-search-form">
+                <div class="search-bar">
+                    <span class="material-icons">search</span>
+                    <input type="text" name="buscar" placeholder="Buscar productos...">
+                </div>
+            </form>
+            <div class="new-button" onclick="document.getElementById('product-search-form').submit()">
+                <span class="material-icons">search</span>
+                <span>Buscar</span>
             </div>
-
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="material-icons feature-icon">inventory_2</div>
-                    <div class="feature-title">Gestión de Productos</div>
-                    <div class="feature-description">
-                        Administra tu catálogo de productos, precios y descripciones de forma centralizada.
-                    </div>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="material-icons feature-icon">groups</div>
-                    <div class="feature-title">Gestión de Clientes</div>
-                    <div class="feature-description">
-                        Mantén organizada la información de tus clientes y su historial de contactos.
-                    </div>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="material-icons feature-icon">request_quote</div>
-                    <div class="feature-title">Cotizaciones</div>
-                    <div class="feature-description">
-                        Crea y gestiona cotizaciones profesionales para tus clientes de manera rápida.
-                    </div>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="material-icons feature-icon">analytics</div>
-                    <div class="feature-title">Reportes</div>
-                    <div class="feature-description">
-                        Genera reportes detallados de ventas, productos y rendimiento del negocio.
-                    </div>
-                </div>
+            
+            <div class="new-button" id="show-new-product-form">
+                <span class="material-icons">add</span>
+                <span>Nuevo Producto</span>
             </div>
         </div>
 
-        <!-- VISTA DE PRODUCTOS -->
-        <div id="product-view" class="view">
-            <div class="header">
-                <form action="php/buscar.php" method="post" id="product-search-form">
-                    <div class="search-bar">
-                        <span class="material-icons">search</span>
-                        <input type="text" name="buscar" placeholder="Buscar productos...">
-                    </div>
-                </form>
-                <div class="new-button" onclick="document.getElementById('product-search-form').submit()">
-                    <span class="material-icons">search</span>
-                    <span>Buscar</span>
-                </div>
-                
-                <div class="new-button" id="show-new-product-form">
-                    <span class="material-icons">add</span>
-                    <span>Nuevo Producto</span>
-                </div>
+        <div class="table-container">
+            <div class="table-header">
+                Productos
             </div>
 
-            <div class="table-container">
-                <div class="table-header">
-                    Productos
-                </div>
-                
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Price Reference</th>
+                        <th>Currency</th>
+                        <th>Product Code</th>
+                        <th>Description 1</th>
+                        <th>Description 2</th>
+                        <th>Order Unit</th>
+                        <th>List Price</th>
+                        <th>Numero Orden</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
 <?php
-// Conexión a la base de datos
-$cnx = mysqli_connect("localhost","root","","mahr");
-if (mysqli_connect_errno()) {
-    die("Error de conexión a la BD: " . mysqli_connect_error());
-}
-
-// --- LÓGICA DE PAGINACIÓN PARA PRODUCTOS ---
-$elementos_pagina_productos = 5; // Número de registros a mostrar por página
-
-// 1. Determinar página actual (por defecto es 1)
-$pagina_actual_productos = isset($_GET['pagina_productos']) ? (int)$_GET['pagina_productos'] : 1;
-$pagina_actual_productos = max(1, $pagina_actual_productos); // Asegura que la página sea al menos 1
-
-// 2. Calcular el punto de inicio para la consulta SQL
-$inicio_productos = ($pagina_actual_productos - 1) * $elementos_pagina_productos;
-
-// 3. Consultar elementos totales
-$sql_total_productos = "SELECT COUNT(*) AS total FROM producto";
-$resultado_total_productos = mysqli_query($cnx, $sql_total_productos);
-$fila_total_productos = mysqli_fetch_assoc($resultado_total_productos);
-$total_elementos_productos = $fila_total_productos['total'];
-
-// 4. Calcular el total de páginas
-$total_paginas_productos = ceil($total_elementos_productos / $elementos_pagina_productos);
-
-// 5. Ajustar página actual si el total de páginas es 0 o si la página es inválida
-if ($total_paginas_productos === 0) {
-    $pagina_actual_productos = 1;
-} elseif ($pagina_actual_productos > $total_paginas_productos) {
-    $pagina_actual_productos = $total_paginas_productos;
-    $inicio_productos = ($pagina_actual_productos - 1) * $elementos_pagina_productos;
-}
-
-// 6. Consulta de la página actual con LIMIT
-$sql_productos = "SELECT IDProducto, PriceReference , Currency , ProductCode, DescriptionLong1 , DescriptionLong2 ,OrderUnit,Listprice , NumeroOrden 
-        FROM producto 
-        ORDER BY IDProducto DESC 
-        LIMIT $inicio_productos, $elementos_pagina_productos";
-        
-$rta_productos = mysqli_query($cnx, $sql_productos);
-// -----------------------------
+if (mysqli_num_rows($rta_productos) > 0) {
+    while ($mostrar = mysqli_fetch_assoc($rta_productos)) {
 ?>
-
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Price Reference</th>
-                            <th>Currency</th>
-                            <th>Product Code</th>
-                            <th>Description 1</th>
-                            <th>Description 2</th>
-                            <th>Order Unit</th>
-                            <th>List Price</th>
-                            <th>Numero Orden</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-<?php
-    // Verifica si hay filas y comienza a iterar
-    if (mysqli_num_rows($rta_productos) > 0) {
-        while ($mostrar = mysqli_fetch_assoc($rta_productos)){
-?>
-                        <tr>
-                            <td><?php echo htmlspecialchars($mostrar['IDProducto']) ?></td>
-                            <td><?php echo htmlspecialchars($mostrar['PriceReference']) ?></td>
-                            <td><?php echo htmlspecialchars($mostrar['Currency']) ?></td>
-                            <td><?php echo htmlspecialchars($mostrar['ProductCode']) ?></td>
-                            <td><?php echo htmlspecialchars($mostrar['DescriptionLong1']) ?></td>
-                            <td><?php echo htmlspecialchars($mostrar['DescriptionLong2']) ?></td>
-                            <td><?php echo htmlspecialchars($mostrar['OrderUnit']) ?></td>
-                            <td><?php echo htmlspecialchars($mostrar['Listprice']) ?></td>
-                            <td><?php echo htmlspecialchars($mostrar['NumeroOrden']) ?></td>
-                            <td class="action-buttons">
-                               <span class="material-icons delete"><a href="php/sp_eliminar.php?IDProducto=<?php echo urlencode($mostrar['IDProducto'])?>">delete</a></span>  
-                               <span class="material-icons edit"><a href="php/editar.php?IDProducto=<?php echo urlencode($mostrar['IDProducto']) ?>">edit</a></span> 
-                            </td>
-                        </tr>
-<?php
-        } // Fin del while
-    } else {
-        // Mensaje si no hay productos
-?>
-                        <tr>
-                            <td colspan="10" style="text-align: center;">No hay productos para mostrar.</td>
-                        </tr>
+                    <tr>
+                        <td><?php echo htmlspecialchars($mostrar['IDProducto'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($mostrar['PriceReference'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($mostrar['Currency'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($mostrar['ProductCode'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($mostrar['DescriptionLong1'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($mostrar['DescriptionLong2'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($mostrar['OrderUnit'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($mostrar['Listprice'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($mostrar['NumeroOrden'] ?? ''); ?></td>
+                        <td class="action-buttons">
+                           <span class="material-icons delete"><a href="php/sp_eliminar.php?IDProducto=<?php echo urlencode($mostrar['IDProducto']); ?>">delete</a></span>  
+                           <span class="material-icons edit"><a href="php/editar.php?IDProducto=<?php echo urlencode($mostrar['IDProducto']); ?>">edit</a></span> 
+                        </td>
+                    </tr>
 <?php
     }
+} else {
 ?>
-                    </tbody>
-                </table>
-            </div>
-
-            <p style="text-align: center; margin-top: 10px;">
-                Mostrando página <strong><?php echo $pagina_actual_productos; ?></strong> de <strong><?php echo $total_paginas_productos; ?></strong>
-                (Total: <strong><?php echo $total_elementos_productos; ?></strong> productos)
-            </p>
-
-            <div class="pagination">
-                <?php
-                $archivo_actual = $_SERVER['PHP_SELF']; 
-
-                if ($total_paginas_productos >= 1) { 
-
-                    // Botón "FIRST PAGE"
-                    if ($pagina_actual_productos > 1) {
-                        echo "<a href='$archivo_actual?pagina_productos=1' class='pagination-button'>FIRST PAGE</a>";
-                    } else {
-                        echo "<span class='pagination-button disabled'>FIRST PAGE</span>";
-                    }
-
-                    // Botón para Retroceder
-                    if ($pagina_actual_productos > 1) {
-                        echo "<a href='$archivo_actual?pagina_productos=" . ($pagina_actual_productos - 1) . "' class='pagination-button'>Retroceder</a>";
-                    } else {
-                        echo "<span class='pagination-button disabled'>Retroceder</span>";
-                    }
-
-                    // --- Numeración de Paginación (con rango) ---
-                    $rango = 2;
-                    $inicio_rango = max(2, $pagina_actual_productos - $rango);
-                    $fin_rango = min($total_paginas_productos - 1, $pagina_actual_productos + $rango);
-
-                    // Página 1 
-                    if ($total_paginas_productos >= 1) {
-                        echo "<a href='$archivo_actual?pagina_productos=1' class='pagination-number" . ($pagina_actual_productos == 1 ? " active" : "") . "'>1</a>";
-                    }
-
-                    // Puntos suspensivos (inicio-activa)
-                    if ($inicio_rango > 2) {
-                        echo "<span class='pagination-number' style='cursor: default;'>...</span>";
-                    }
-
-                    // Rango alrededor de la página activa
-                    for ($i = $inicio_rango; $i <= $fin_rango; $i++) {
-                        echo "<a href='$archivo_actual?pagina_productos=$i' class='pagination-number" . ($i == $pagina_actual_productos ? " active" : "") . "'>$i</a>";
-                    }
-
-                    // Puntos suspensivos (activa-fin)
-                    if ($fin_rango < $total_paginas_productos - 1) {
-                        echo "<span class='pagination-number' style='cursor: default;'>...</span>";
-                    }
-                    
-                    // Última página
-                    if ($total_paginas_productos > 1 && ($total_paginas_productos != 1)) {
-                        echo "<a href='$archivo_actual?pagina_productos=$total_paginas_productos' class='pagination-number" . ($pagina_actual_productos == $total_paginas_productos ? " active" : "" ) . "'>$total_paginas_productos</a>";
-                    }
-
-                    // Botón para Avanzar
-                    if ($pagina_actual_productos < $total_paginas_productos) {
-                        echo "<a href='$archivo_actual?pagina_productos=" . ($pagina_actual_productos + 1) . "' class='pagination-button'>Avanzar</a>";
-                    } else {
-                        echo "<span class='pagination-button disabled'>Avanzar</span>";
-                    }
-                    
-                    // Botón "LAST PAGE"
-                    if ($pagina_actual_productos < $total_paginas_productos) {
-                        echo "<a href='$archivo_actual?pagina_productos=$total_paginas_productos' class='pagination-button'>LAST PAGE</a>";
-                    } else {
-                        echo "<span class='pagination-button disabled'>LAST PAGE</span>";
-                    }
-                }
-                ?>
-            </div>
+                    <tr>
+                        <td colspan="10" style="text-align: center;">No hay productos para mostrar.</td>
+                    </tr>
+<?php
+}
+?>
+                </tbody>
+            </table>
         </div>
 
-        <!-- FORMULARIO DE NUEVO PRODUCTO -->
-        <div id="new-product-form-view" class="form-view">
-            <form action="php/sp_insertar.php" method="post" enctype="multipart/form-data">
+        <p style="text-align: center; margin-top: 10px;">
+            Mostrando página <strong><?php echo $pagina_actual_productos; ?></strong> de <strong><?php echo $total_paginas_productos; ?></strong>
+            (Total: <strong><?php echo $total_elementos_productos; ?></strong> productos)
+        </p>
+
+        <div class="pagination">
+            <?php
+            $archivo_actual = $_SERVER['PHP_SELF'];
+
+            if ($total_paginas_productos >= 1) {
+                // Botón FIRST PAGE
+                if ($pagina_actual_productos > 1) {
+                    echo "<a href='$archivo_actual?pagina_productos=1' class='pagination-button'>FIRST PAGE</a>";
+                } else {
+                    echo "<span class='pagination-button disabled'>FIRST PAGE</span>";
+                }
+
+                // Botón Retroceder
+                if ($pagina_actual_productos > 1) {
+                    echo "<a href='$archivo_actual?pagina_productos=" . ($pagina_actual_productos - 1) . "' class='pagination-button'>Retroceder</a>";
+                } else {
+                    echo "<span class='pagination-button disabled'>Retroceder</span>";
+                }
+
+                // Página 1
+                echo "<a href='$archivo_actual?pagina_productos=1' class='pagination-number" . ($pagina_actual_productos == 1 ? " active" : "") . "'>1</a>";
+
+                // Puntos suspensivos inicio
+                if ($pagina_actual_productos > 4) {
+                    echo "<span class='pagination-number' style='cursor: default;'>...</span>";
+                }
+
+                // Rango alrededor de la página actual
+                $inicio_rango = max(2, $pagina_actual_productos - 2);
+                $fin_rango = min($total_paginas_productos - 1, $pagina_actual_productos + 2);
+                
+                for ($i = $inicio_rango; $i <= $fin_rango; $i++) {
+                    if ($i > 1 && $i < $total_paginas_productos) {
+                        echo "<a href='$archivo_actual?pagina_productos=$i' class='pagination-number" . ($i == $pagina_actual_productos ? " active" : "") . "'>$i</a>";
+                    }
+                }
+
+                // Puntos suspensivos final
+                if ($pagina_actual_productos < $total_paginas_productos - 3) {
+                    echo "<span class='pagination-number' style='cursor: default;'>...</span>";
+                }
+
+                // Última página
+                if ($total_paginas_productos > 1) {
+                    echo "<a href='$archivo_actual?pagina_productos=$total_paginas_productos' class='pagination-number" . ($pagina_actual_productos == $total_paginas_productos ? " active" : "") . "'>$total_paginas_productos</a>";
+                }
+
+                // Botón Avanzar
+                if ($pagina_actual_productos < $total_paginas_productos) {
+                    echo "<a href='$archivo_actual?pagina_productos=" . ($pagina_actual_productos + 1) . "' class='pagination-button'>Avanzar</a>";
+                } else {
+                    echo "<span class='pagination-button disabled'>Avanzar</span>";
+                }
+
+                // Botón LAST PAGE
+                if ($pagina_actual_productos < $total_paginas_productos) {
+                    echo "<a href='$archivo_actual?pagina_productos=$total_paginas_productos' class='pagination-button'>LAST PAGE</a>";
+                } else {
+                    echo "<span class='pagination-button disabled'>LAST PAGE</span>";
+                }
+            }
+            ?>
+        </div>
+    </div>
+
+    <!-- FORMULARIO DE NUEVO PRODUCTO -->
+    <div id="new-product-form-view" class="form-view">
+        <form action="php/sp_insertar.php" method="post" enctype="multipart/form-data">
             <h2>Nuevo Producto</h2>
             <div class="form-group">
                 <label for="ref-price">Price Reference</label>
-                <input type="text" name="PriceReference" id="ref-price" required="">
+                <input type="text" name="PriceReference" id="ref-price" required>
             </div>
             <div class="form-group">
                 <label for="currency">Currency</label>
@@ -388,7 +455,7 @@ $rta_productos = mysqli_query($cnx, $sql_productos);
             </div>
             <div class="form-group">
                 <label for="desc-long2">Description 2</label>
-                 <input type="text" name="DescriptionLong2" id="desc-long2">
+                <input type="text" name="DescriptionLong2" id="desc-long2">
             </div>
             <div class="form-group">
                 <label for="order-unit">Order Unit</label>
@@ -404,188 +471,135 @@ $rta_productos = mysqli_query($cnx, $sql_productos);
             </div>
             
             <div class="form-buttons">
-                <button type="submit" value="Guardar" class="form-button" id="submit-product-form">ENVIAR</button>
+                <button type="submit" class="form-button">ENVIAR</button>
                 <button type="button" class="form-button clear" id="clear-product-form">BORRAR CAMPOS</button>
-                <button type="button" class="form-button clear" id="cancel-product-form"> Cancelar </button>
+                <button type="button" class="form-button clear" id="cancel-product-form">Cancelar</button>
             </div>
-            </form>
-        </div>
-        
-        <!-- VISTA DE CLIENTES -->
-        <div id="client-view" class="view">
-            <div class="header">
-                <form action="php/buscarCliente.php" method="post" id="client-search-form">
-                    <div class="search-bar">
-                        <span class="material-icons">search</span>
-                        <input type="text" placeholder="Buscar clientes..." name="buscar">
-                    </div>
-                </form>
-                <div class="new-button" onclick="document.getElementById('client-search-form').submit()">
+        </form>
+    </div>
+    
+    <!-- VISTA DE CLIENTES -->
+    <div id="client-view" class="view">
+        <div class="header">
+            <form action="php/buscarCliente.php" method="post" id="client-search-form">
+                <div class="search-bar">
                     <span class="material-icons">search</span>
-                    <span>Buscar</span>
+                    <input type="text" placeholder="Buscar clientes..." name="buscar">
                 </div>
-                <div class="new-button" id="show-new-client-form">
-                    <span class="material-icons">add</span>
-                    <span>Nuevo Cliente</span>
-                </div>
+            </form>
+            <div class="new-button" onclick="document.getElementById('client-search-form').submit()">
+                <span class="material-icons">search</span>
+                <span>Buscar</span>
             </div>
+            <div class="new-button" id="show-new-client-form">
+                <span class="material-icons">add</span>
+                <span>Nuevo Cliente</span>
+            </div>
+        </div>
 
+        <div class="table-container">
+            <div class="table-header">
+                Clientes
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre Empresa</th>
+                        <th>Attn Cliente</th>
+                        <th>Dirección</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
 <?php
-// Conexión a la base de datos (si ya está conectada, no es necesario conectar de nuevo)
-if (!$cnx) {
-    $cnx = mysqli_connect("localhost","root","","mahr");
-    if (mysqli_connect_errno()) {
-        die("Error de conexión a la BD: " . mysqli_connect_error());
-    }
-}
-
-// --- LÓGICA DE PAGINACIÓN PARA CLIENTES ---
-$elementos_pagina_clientes = 5; // Número de registros a mostrar por página
-
-// 1. Determinar página actual (por defecto es 1)
-$pagina_actual_clientes = isset($_GET['pagina_clientes']) ? (int)$_GET['pagina_clientes'] : 1;
-$pagina_actual_clientes = max(1, $pagina_actual_clientes); // Asegura que la página sea al menos 1
-
-// 2. Calcular el punto de inicio para la consulta SQL
-$inicio_clientes = ($pagina_actual_clientes - 1) * $elementos_pagina_clientes;
-
-// 3. Consultar elementos totales
-$sql_total_clientes = "SELECT COUNT(*) AS total FROM cliente";
-$resultado_total_clientes = mysqli_query($cnx, $sql_total_clientes);
-$fila_total_clientes = mysqli_fetch_assoc($resultado_total_clientes);
-$total_elementos_clientes = $fila_total_clientes['total'];
-
-// 4. Calcular el total de páginas
-$total_paginas_clientes = ceil($total_elementos_clientes / $elementos_pagina_clientes);
-
-// 5. Ajustar página actual si el total de páginas es 0 o si la página es inválida
-if ($total_paginas_clientes === 0) {
-    $pagina_actual_clientes = 1;
-} elseif ($pagina_actual_clientes > $total_paginas_clientes) {
-    $pagina_actual_clientes = $total_paginas_clientes;
-    $inicio_clientes = ($pagina_actual_clientes - 1) * $elementos_pagina_clientes;
-}
-
-// 6. Consulta de la página actual con LIMIT
-$sql_clientes = "SELECT IDCliente, NombreEmpresa, AttnCliente , Direccion , Phone , Email 
-        FROM cliente
-        ORDER BY IDCliente DESC 
-        LIMIT $inicio_clientes, $elementos_pagina_clientes";
-        
-$rta_clientes = mysqli_query($cnx, $sql_clientes);
-// -----------------------------
+if (mysqli_num_rows($rta_clientes) > 0) {
+    while ($mostrar = mysqli_fetch_assoc($rta_clientes)) {
 ?>
-
-            <div class="table-container">
-                <div class="table-header">
-                    Clientes
-                </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Nombre Empresa</th>
-                            <th>Attn Cliente</th>
-                            <th>Dirección</th>
-                            <th>Phone</th>
-                            <th>Email</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-<?php
-    // Verifica si hay filas y comienza a iterar
-    if (mysqli_num_rows($rta_clientes) > 0) {
-        while ($mostrar = mysqli_fetch_assoc($rta_clientes)){
-?>
-                        <tr>
-                            <td><?php echo htmlspecialchars($mostrar['IDCliente']) ?></td>
-                            <td><?php echo htmlspecialchars($mostrar['NombreEmpresa']) ?></td>
-                            <td><?php echo htmlspecialchars($mostrar['AttnCliente']) ?></td>
-                            <td><?php echo htmlspecialchars($mostrar['Direccion']) ?></td>
-                            <td><?php echo htmlspecialchars($mostrar['Phone']) ?></td>
-                            <td><?php echo htmlspecialchars($mostrar['Email']) ?></td>
-                            <td class="action-buttons">
-                               <span class="material-icons delete"><a href="php/sp_eliminarCliente.php?IDCliente=<?php echo urlencode($mostrar['IDCliente'])?>">delete</a></span>  
-                               <span class="material-icons edit"><a href="php/editarCliente.php?IDCliente=<?php echo urlencode($mostrar['IDCliente']) ?>">edit</a></span> 
-                            </td>
-                        </tr>
-<?php
-        } // Fin del while
-    } else {
-        // Mensaje si no hay clientes
-?>
-                        <tr>
-                            <td colspan="7" style="text-align: center;">No hay Clientes para mostrar.</td>
-                        </tr>
+                    <tr>
+                        <td><?php echo htmlspecialchars($mostrar['IDCliente'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($mostrar['NombreEmpresa'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($mostrar['AttnCliente'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($mostrar['Direccion'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($mostrar['Phone'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($mostrar['Email'] ?? ''); ?></td>
+                        <td class="action-buttons">
+                           <span class="material-icons delete"><a href="php/sp_eliminarCliente.php?IDCliente=<?php echo urlencode($mostrar['IDCliente']); ?>">delete</a></span>  
+                           <span class="material-icons edit"><a href="php/editarCliente.php?IDCliente=<?php echo urlencode($mostrar['IDCliente']); ?>">edit</a></span> 
+                        </td>
+                    </tr>
 <?php
     }
+} else {
+?>
+                    <tr>
+                        <td colspan="7" style="text-align: center;">No hay Clientes para mostrar.</td>
+                    </tr>
+<?php
+}
 ?>          
-                    </tbody>
-                </table>
-                 <p style="text-align: center; margin-top: 10px;">
+                </tbody>
+            </table>
+            <p style="text-align: center; margin-top: 10px;">
                 Mostrando página <strong><?php echo $pagina_actual_clientes; ?></strong> de <strong><?php echo $total_paginas_clientes; ?></strong>
                 (Total: <strong><?php echo $total_elementos_clientes; ?></strong> Clientes)
             </p>
 
             <div class="pagination">
                 <?php
-                $archivo_actual = $_SERVER['PHP_SELF']; 
-
-                if ($total_paginas_clientes >= 1) { 
-
-                    // Botón "FIRST PAGE"
+                if ($total_paginas_clientes >= 1) {
+                    // Botón FIRST PAGE
                     if ($pagina_actual_clientes > 1) {
                         echo "<a href='$archivo_actual?pagina_clientes=1' class='pagination-button'>FIRST PAGE</a>";
                     } else {
                         echo "<span class='pagination-button disabled'>FIRST PAGE</span>";
                     }
 
-                    // Botón para Retroceder
+                    // Botón Retroceder
                     if ($pagina_actual_clientes > 1) {
                         echo "<a href='$archivo_actual?pagina_clientes=" . ($pagina_actual_clientes - 1) . "' class='pagination-button'>Retroceder</a>";
                     } else {
                         echo "<span class='pagination-button disabled'>Retroceder</span>";
                     }
 
-                    // --- Numeración de Paginación (con rango) ---
-                    $rango = 2;
-                    $inicio_rango = max(2, $pagina_actual_clientes - $rango);
-                    $fin_rango = min($total_paginas_clientes - 1, $pagina_actual_clientes + $rango);
+                    // Página 1
+                    echo "<a href='$archivo_actual?pagina_clientes=1' class='pagination-number" . ($pagina_actual_clientes == 1 ? " active" : "") . "'>1</a>";
 
-                    // Página 1 
-                    if ($total_paginas_clientes >= 1) {
-                        echo "<a href='$archivo_actual?pagina_clientes=1' class='pagination-number" . ($pagina_actual_clientes == 1 ? " active" : "") . "'>1</a>";
-                    }
-
-                    // Puntos suspensivos (inicio-activa)
-                    if ($inicio_rango > 2) {
+                    // Puntos suspensivos inicio
+                    if ($pagina_actual_clientes > 4) {
                         echo "<span class='pagination-number' style='cursor: default;'>...</span>";
                     }
 
-                    // Rango alrededor de la página activa
-                    for ($i = $inicio_rango; $i <= $fin_rango; $i++) {
-                        echo "<a href='$archivo_actual?pagina_clientes=$i' class='pagination-number" . ($i == $pagina_actual_clientes ? " active" : "") . "'>$i</a>";
-                    }
-
-                    // Puntos suspensivos (activa-fin)
-                    if ($fin_rango < $total_paginas_clientes - 1) {
-                        echo "<span class='pagination-number' style='cursor: default;'>...</span>";
-                    }
+                    // Rango alrededor de la página actual
+                    $inicio_rango = max(2, $pagina_actual_clientes - 2);
+                    $fin_rango = min($total_paginas_clientes - 1, $pagina_actual_clientes + 2);
                     
-                    // Última página
-                    if ($total_paginas_clientes > 1 && ($total_paginas_clientes != 1)) {
-                        echo "<a href='$archivo_actual?pagina_clientes=$total_paginas_clientes' class='pagination-number" . ($pagina_actual_clientes == $total_paginas_clientes ? " active" : "" ) . "'>$total_paginas_clientes</a>";
+                    for ($i = $inicio_rango; $i <= $fin_rango; $i++) {
+                        if ($i > 1 && $i < $total_paginas_clientes) {
+                            echo "<a href='$archivo_actual?pagina_clientes=$i' class='pagination-number" . ($i == $pagina_actual_clientes ? " active" : "") . "'>$i</a>";
+                        }
                     }
 
-                    // Botón para Avanzar
+                    // Puntos suspensivos final
+                    if ($pagina_actual_clientes < $total_paginas_clientes - 3) {
+                        echo "<span class='pagination-number' style='cursor: default;'>...</span>";
+                    }
+
+                    // Última página
+                    if ($total_paginas_clientes > 1) {
+                        echo "<a href='$archivo_actual?pagina_clientes=$total_paginas_clientes' class='pagination-number" . ($pagina_actual_clientes == $total_paginas_clientes ? " active" : "") . "'>$total_paginas_clientes</a>";
+                    }
+
+                    // Botón Avanzar
                     if ($pagina_actual_clientes < $total_paginas_clientes) {
                         echo "<a href='$archivo_actual?pagina_clientes=" . ($pagina_actual_clientes + 1) . "' class='pagination-button'>Avanzar</a>";
                     } else {
                         echo "<span class='pagination-button disabled'>Avanzar</span>";
                     }
-                    
-                    // Botón "LAST PAGE"
+
+                    // Botón LAST PAGE
                     if ($pagina_actual_clientes < $total_paginas_clientes) {
                         echo "<a href='$archivo_actual?pagina_clientes=$total_paginas_clientes' class='pagination-button'>LAST PAGE</a>";
                     } else {
@@ -594,352 +608,327 @@ $rta_clientes = mysqli_query($cnx, $sql_clientes);
                 }
                 ?>
             </div>
-            </div>
-        </div>
-
-        <!-- FORMULARIO DE NUEVO CLIENTE -->
-        <div id="new-client-form-view" class="form-view">
-            <form action="php/sp_insertarCliente.php" method="post" enctype="multipart/form-data">
-                <h2>Nuevo Cliente</h2>
-                <div class="form-group">
-                    <label for="nombre-empresa">Nombre de empresa</label>
-                    <input type="text" id="nombre-empresa" name="NombreEmpresa">
-                </div>
-                <div class="form-group">
-                    <label for="attn-cliente">Nombre de persona</label>
-                    <input type="text" id="attn-cliente" name="AttnCliente">
-                </div>
-                <div class="form-group">
-                    <label for="direccion">Dirección</label>
-                    <input type="text" id="direccion" name="Direccion">
-                </div>
-                <div class="form-group">
-                    <label for="telefono">Teléfono</label>
-                    <input type="text" id="telefono" name="Phone">
-                </div>
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="Email">
-                </div>
-                <div class="form-buttons">
-                    <button type="submit" class="form-button">ENVIAR</button>
-                    <button type="button" class="form-button clear" id="clear-client-form">BORRAR CAMPOS</button>
-                    <button type="button" class="form-button clear" id="cancel-client-form">Cancelar</button>
-                </div>
-            </form>
-        </div>
-
-        <!-- VISTA DE COTIZACIONES -->
-        <div id="quotation-view" class="view">
-            <div class="header">
-                <div class="search-bar">
-                    <span class="material-icons">search</span>
-                    <input type="text" placeholder="Buscar cotizaciones...">
-                </div>
-            </div>
-            <div class="table-container">
-                <div class="table-header">
-                    Cotizaciones
-                </div>
-                <p style="padding: 20px; text-align: center;">Contenido de cotizaciones aquí</p>
-            </div>
-        </div>
-
-        <!-- VISTA DE GENERAR COTIZACIÓN -->
-        <div id="generate-quotation-view" class="view">
-            <div class="header">
-                <h2>Generar Cotización</h2>
-            </div>
-            <div class="table-container">
-                <div class="table-header">
-                    Generar Nueva Cotización
-                </div>
-
-                <!-- Checkbox para seleccionar tipo de cliente -->
-                <div class="checkbox-container" style="margin-bottom: 30px;">
-                    <input type="checkbox" name="existe" id="existe" onchange="toggleClientForm()">
-                    <label for="existe">¿Cliente existente?</label>
-                </div>
-
-                <!-- Formulario para cliente EXISTENTE -->
-                <div id="form-cliente-existente" class="client-form quotation-form" style="display: none;">
-                    <form action="php/factura.php" method="post" enctype="multipart/form-data">
-                        <h2>Cotización - Cliente Existente</h2>
-                        <div class="form-group">
-                            <label for="NombreEmpresaExistente">Nombre de empresa</label>
-                            <input type="text" name="NombreEmpresa" id="NombreEmpresaExistente" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="personaExistente">Nombre de persona</label>
-                            <input type="text" name="persona" id="personaExistente" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="NumeroOrdenExistente">Número de orden</label>
-                            <input type="text" name="NumeroOrden" id="NumeroOrdenExistente" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="TiempoEntregaExistente">Tiempo estimado de entrega</label>
-                            <input type="text" name="TiempoEntrega" id="TiempoEntregaExistente" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="codigoExistente">Código del producto</label>
-                            <input type="text" name="codigo" id="codigoExistente" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="descuentoExistente">Descuento a aplicar (Si no aplica, dejar vacío)</label>
-                            <input type="text" name="descuento" id="descuentoExistente">
-                        </div>
-                        <div class="form-group">
-                            <label for="cantItemsExistente">Cantidad de items</label>
-                            <input type="text" name="cantItems" id="cantItemsExistente" required>
-                        </div>
-                        
-                        <div class="form-buttons">
-                            <button type="submit" class="form-button">ENVIAR</button>
-                            <button type="button" class="form-button clear" onclick="clearForm('form-cliente-existente')">BORRAR CAMPOS</button>
-                            <button type="button" class="form-button clear" onclick="cancelQuotation()">Cancelar</button>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Formulario para cliente NUEVO -->
-                <div id="form-cliente-nuevo" class="client-form quotation-form">
-                    <form action="php/factura.php" method="post" enctype="multipart/form-data">
-                        <h2>Cotización - Cliente Nuevo</h2>
-                        <div class="form-group">
-                            <label for="NombreEmpresaNuevo">Nombre de empresa</label>
-                            <input type="text" name="NombreEmpresa" id="NombreEmpresaNuevo" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="personaNuevo">Nombre de persona</label>
-                            <input type="text" name="persona" id="personaNuevo" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="direccionNuevo">Dirección</label>
-                            <input type="text" name="direccion" id="direccionNuevo" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="EstadoLugarNuevo">Estado / Lugar</label>
-                            <input type="text" name="EstadoLugar" id="EstadoLugarNuevo" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="telefonoNuevo">Teléfono</label>
-                            <input type="text" name="telefono" id="telefonoNuevo" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="emailNuevo">Email</label>
-                            <input type="email" name="email" id="emailNuevo" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="NumeroOrdenNuevo">Número de orden</label>
-                            <input type="text" name="NumeroOrden" id="NumeroOrdenNuevo" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="TiempoEntregaNuevo">Tiempo estimado de entrega</label>
-                            <input type="text" name="TiempoEntrega" id="TiempoEntregaNuevo" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="codigoNuevo">Código del producto</label>
-                            <input type="text" name="codigo" id="codigoNuevo" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="descuentoNuevo">Descuento a aplicar (Si no aplica, dejar vacío)</label>
-                            <input type="text" name="descuento" id="descuentoNuevo">
-                        </div>
-                        <div class="form-group">
-                            <label for="cantItemsNuevo">Cantidad de items</label>
-                            <input type="text" name="cantItems" id="cantItemsNuevo" required>
-                        </div>
-                        
-                        <div class="form-buttons">
-                            <button type="submit" class="form-button">ENVIAR</button>
-                            <button type="button" class="form-button clear" onclick="clearForm('form-cliente-nuevo')">BORRAR CAMPOS</button>
-                            <button type="button" class="form-button clear" onclick="cancelQuotation()">Cancelar</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
         </div>
     </div>
 
-<?php
-// Cierra la conexión a la base de datos después de usarla
-if (isset($cnx)) {
-    mysqli_close($cnx);
-}
-?>
+    <!-- FORMULARIO DE NUEVO CLIENTE -->
+    <div id="new-client-form-view" class="form-view">
+        <form action="php/sp_insertarCliente.php" method="post" enctype="multipart/form-data">
+            <h2>Nuevo Cliente</h2>
+            <div class="form-group">
+                <label for="nombre-empresa">Nombre de empresa</label>
+                <input type="text" id="nombre-empresa" name="NombreEmpresa">
+            </div>
+            <div class="form-group">
+                <label for="attn-cliente">Nombre de persona</label>
+                <input type="text" id="attn-cliente" name="AttnCliente">
+            </div>
+            <div class="form-group">
+                <label for="direccion">Dirección</label>
+                <input type="text" id="direccion" name="Direccion">
+            </div>
+            <div class="form-group">
+                <label for="telefono">Teléfono</label>
+                <input type="text" id="telefono" name="Phone">
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="Email">
+            </div>
+            <div class="form-buttons">
+                <button type="submit" class="form-button">ENVIAR</button>
+                <button type="button" class="form-button clear" id="clear-client-form">BORRAR CAMPOS</button>
+                <button type="button" class="form-button clear" id="cancel-client-form">Cancelar</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- VISTA DE COTIZACIONES -->
+    <div id="quotation-view" class="view">
+        <div class="header">
+            <div class="search-bar">
+                <span class="material-icons">search</span>
+                <input type="text" placeholder="Buscar cotizaciones...">
+            </div>
+        </div>
+        <div class="table-container">
+            <div class="table-header">
+                Cotizaciones
+            </div>
+            <p style="padding: 20px; text-align: center;">Contenido de cotizaciones aquí</p>
+        </div>
+    </div>
+
+    <!-- VISTA DE GENERAR COTIZACIÓN -->
+    <div id="generate-quotation-view" class="view">
+        <div class="header">
+            <h2>Generar Cotización</h2>
+        </div>
+        <div class="table-container">
+            <div class="table-header">
+                Generar Nueva Cotización
+            </div>
+
+            <div class="checkbox-container" style="margin-bottom: 30px;">
+                <input type="checkbox" name="existe" id="existe" onchange="toggleClientForm()">
+                <label for="existe">¿Cliente existente?</label>
+            </div>
+
+            <div id="form-cliente-existente" class="client-form quotation-form" style="display: none;">
+                <form action="php/factura.php" method="post" enctype="multipart/form-data">
+                    <h2>Cotización - Cliente Existente</h2>
+                    <div class="form-group">
+                        <label for="NombreEmpresaExistente">Nombre de empresa</label>
+                        <input type="text" name="NombreEmpresa" id="NombreEmpresaExistente" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="personaExistente">Nombre de persona</label>
+                        <input type="text" name="persona" id="personaExistente" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="NumeroOrdenExistente">Número de orden</label>
+                        <input type="text" name="NumeroOrden" id="NumeroOrdenExistente" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="TiempoEntregaExistente">Tiempo estimado de entrega</label>
+                        <input type="text" name="TiempoEntrega" id="TiempoEntregaExistente" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="codigoExistente">Código del producto</label>
+                        <input type="text" name="codigo" id="codigoExistente" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="descuentoExistente">Descuento a aplicar (Si no aplica, dejar vacío)</label>
+                        <input type="text" name="descuento" id="descuentoExistente">
+                    </div>
+                    <div class="form-group">
+                        <label for="cantItemsExistente">Cantidad de items</label>
+                        <input type="text" name="cantItems" id="cantItemsExistente" required>
+                    </div>
+                    
+                    <div class="form-buttons">
+                        <button type="submit" class="form-button">ENVIAR</button>
+                        <button type="button" class="form-button clear" onclick="clearForm('form-cliente-existente')">BORRAR CAMPOS</button>
+                        <button type="button" class="form-button clear" onclick="cancelQuotation()">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="form-cliente-nuevo" class="client-form quotation-form">
+                <form action="php/factura.php" method="post" enctype="multipart/form-data">
+                    <h2>Cotización - Cliente Nuevo</h2>
+                    <div class="form-group">
+                        <label for="NombreEmpresaNuevo">Nombre de empresa</label>
+                        <input type="text" name="NombreEmpresa" id="NombreEmpresaNuevo" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="personaNuevo">Nombre de persona</label>
+                        <input type="text" name="persona" id="personaNuevo" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="direccionNuevo">Dirección</label>
+                        <input type="text" name="direccion" id="direccionNuevo" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="EstadoLugarNuevo">Estado / Lugar</label>
+                        <input type="text" name="EstadoLugar" id="EstadoLugarNuevo" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="telefonoNuevo">Teléfono</label>
+                        <input type="text" name="telefono" id="telefonoNuevo" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="emailNuevo">Email</label>
+                        <input type="email" name="email" id="emailNuevo" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="NumeroOrdenNuevo">Número de orden</label>
+                        <input type="text" name="NumeroOrden" id="NumeroOrdenNuevo" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="TiempoEntregaNuevo">Tiempo estimado de entrega</label>
+                        <input type="text" name="TiempoEntrega" id="TiempoEntregaNuevo" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="codigoNuevo">Código del producto</label>
+                        <input type="text" name="codigo" id="codigoNuevo" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="descuentoNuevo">Descuento a aplicar (Si no aplica, dejar vacío)</label>
+                        <input type="text" name="descuento" id="descuentoNuevo">
+                    </div>
+                    <div class="form-group">
+                        <label for="cantItemsNuevo">Cantidad de items</label>
+                        <input type="text" name="cantItems" id="cantItemsNuevo" required>
+                    </div>
+                    
+                    <div class="form-buttons">
+                        <button type="submit" class="form-button">ENVIAR</button>
+                        <button type="button" class="form-button clear" onclick="clearForm('form-cliente-nuevo')">BORRAR CAMPOS</button>
+                        <button type="button" class="form-button clear" onclick="cancelQuotation()">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Elementos de navegación del sidebar
-            const sidebarItems = document.querySelectorAll('.sidebar-item');
-            
-            // Elementos de vistas
-            const views = document.querySelectorAll('.view');
-            
-            // Botones para mostrar formularios
-            const showNewClientFormButton = document.getElementById('show-new-client-form');
-            const showNewProductFormButton = document.getElementById('show-new-product-form');
-            
-            // Botones de envío de formularios
-            const submitProductFormButton = document.getElementById('submit-product-form');
-            
-            // Botones para limpiar formularios
-            const clearClientFormButton = document.getElementById('clear-client-form');
-            const clearProductFormButton = document.getElementById('clear-product-form');
-            const cancelProductFormButton = document.getElementById('cancel-product-form');
-            const cancelClientFormButton = document.getElementById('cancel-client-form');
-            
-            // Botón para ir a generar cotización desde el inicio
-            const goToQuotationBtn = document.getElementById('go-to-quotation-btn');
-            
-            // Formularios
-            const newClientFormView = document.getElementById('new-client-form-view');
-            const newProductFormView = document.getElementById('new-product-form-view');
-            const productView = document.getElementById('product-view');
-            const clientView = document.getElementById('client-view');
-            
-            // Función para cambiar de vista
-            function switchView(viewId) {
-                // Ocultar todas las vistas
-                views.forEach(view => {
-                    view.classList.remove('active');
-                });
-                
-                // Mostrar la vista seleccionada
-                document.getElementById(viewId).classList.add('active');
-                
-                // Actualizar estado activo en el sidebar
-                sidebarItems.forEach(item => {
-                    item.classList.remove('active');
-                    if (item.getAttribute('data-view') === viewId) {
-                        item.classList.add('active');
-                    }
-                });
-                
-                // Ocultar formularios si están visibles
-                newClientFormView.style.display = 'none';
-                newProductFormView.style.display = 'none';
-            }
-            
-            // Configurar eventos para los elementos del sidebar
-            sidebarItems.forEach(item => {
-                item.addEventListener('click', function() {
-                    const viewId = this.getAttribute('data-view');
-                    switchView(viewId);
-                });
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebarItems = document.querySelectorAll('.sidebar-item');
+        const views = document.querySelectorAll('.view');
+        const showNewClientFormButton = document.getElementById('show-new-client-form');
+        const showNewProductFormButton = document.getElementById('show-new-product-form');
+        const clearClientFormButton = document.getElementById('clear-client-form');
+        const clearProductFormButton = document.getElementById('clear-product-form');
+        const cancelProductFormButton = document.getElementById('cancel-product-form');
+        const cancelClientFormButton = document.getElementById('cancel-client-form');
+        const goToQuotationBtn = document.getElementById('go-to-quotation-btn');
+        const newClientFormView = document.getElementById('new-client-form-view');
+        const newProductFormView = document.getElementById('new-product-form-view');
+        const productView = document.getElementById('product-view');
+        const clientView = document.getElementById('client-view');
+        
+        function switchView(viewId) {
+            views.forEach(view => {
+                view.classList.remove('active');
             });
             
-            // Evento para el botón "Generar Cotización" en la vista de inicio
+            const targetView = document.getElementById(viewId);
+            if (targetView) {
+                targetView.classList.add('active');
+            }
+            
+            sidebarItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('data-view') === viewId) {
+                    item.classList.add('active');
+                }
+            });
+            
+            if (newClientFormView) newClientFormView.style.display = 'none';
+            if (newProductFormView) newProductFormView.style.display = 'none';
+        }
+        
+        sidebarItems.forEach(item => {
+            item.addEventListener('click', function() {
+                const viewId = this.getAttribute('data-view');
+                switchView(viewId);
+            });
+        });
+        
+        if (goToQuotationBtn) {
             goToQuotationBtn.addEventListener('click', function() {
                 switchView('generate-quotation-view');
             });
-            
-            // Mostrar formulario de nuevo cliente
+        }
+        
+        if (showNewClientFormButton) {
             showNewClientFormButton.addEventListener('click', function() {
-                clientView.classList.remove('active');
-                newClientFormView.style.display = 'flex';
+                if (clientView) clientView.classList.remove('active');
+                if (newClientFormView) newClientFormView.style.display = 'flex';
             });
-            
-            // Mostrar formulario de nuevo producto
+        }
+        
+        if (showNewProductFormButton) {
             showNewProductFormButton.addEventListener('click', function() {
-                productView.classList.remove('active');
-                newProductFormView.style.display = 'flex';
+                if (productView) productView.classList.remove('active');
+                if (newProductFormView) newProductFormView.style.display = 'flex';
             });
-            
-            // Limpiar formulario de cliente
+        }
+        
+        if (clearClientFormButton) {
             clearClientFormButton.addEventListener('click', function() {
-                newClientFormView.querySelector('form').reset();
+                const form = document.querySelector('#new-client-form-view form');
+                if (form) form.reset();
             });
-            
-            // Limpiar formulario de producto
+        }
+        
+        if (clearProductFormButton) {
             clearProductFormButton.addEventListener('click', function() {
-                newProductFormView.querySelector('form').reset();
+                const form = document.querySelector('#new-product-form-view form');
+                if (form) form.reset();
             });
+        }
 
-            // Cancelar formulario de producto
+        if (cancelProductFormButton) {
             cancelProductFormButton.addEventListener('click', function() {
-                newProductFormView.style.display = 'none';
-                productView.classList.add('active');
-                // Asegúrate de que el sidebar item correspondiente esté activo
-                document.querySelector('.sidebar-item[data-view="product-view"]').classList.add('active');
+                if (newProductFormView) newProductFormView.style.display = 'none';
+                if (productView) productView.classList.add('active');
+                const productSidebar = document.querySelector('.sidebar-item[data-view="product-view"]');
+                if (productSidebar) productSidebar.classList.add('active');
             });
+        }
 
-            // Cancelar formulario de cliente
+        if (cancelClientFormButton) {
             cancelClientFormButton.addEventListener('click', function() {
-                newClientFormView.style.display = 'none';
-                clientView.classList.add('active');
-                // Asegúrate de que el sidebar item correspondiente esté activo
-                document.querySelector('.sidebar-item[data-view="client-view"]').classList.add('active');
+                if (newClientFormView) newClientFormView.style.display = 'none';
+                if (clientView) clientView.classList.add('active');
+                const clientSidebar = document.querySelector('.sidebar-item[data-view="client-view"]');
+                if (clientSidebar) clientSidebar.classList.add('active');
             });
-
-            // Inicializar el estado de los formularios de cotización
-            toggleClientForm();
-
-            // Al cargar, asegurarse de que la vista de inicio esté activa
-            if (!document.querySelector('.view.active')) {
-                 document.getElementById('inicio-view').classList.add('active');
-            }
-        });
+        }
 
         const sidebarToggle = document.querySelector('.sidebar-toggle');
         const sidebar = document.querySelector('.sidebar');
+        
+        if (sidebarToggle && sidebar) {
+            sidebarToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('sidebar-collapsed');
+            });
+        }
 
-        sidebarToggle.addEventListener('click', function() {
-            sidebar.classList.toggle('sidebar-collapsed');
-        });
+        toggleClientForm();
+    });
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const vistaParam = urlParams.get('vista');
-
-        // Función para alternar entre formularios de cliente - CORREGIDA
-        function toggleClientForm() {
-            const checkbox = document.getElementById('existe');
-            const formExistente = document.getElementById('form-cliente-existente');
-            const formNuevo = document.getElementById('form-cliente-nuevo');
-            
+    function toggleClientForm() {
+        const checkbox = document.getElementById('existe');
+        const formExistente = document.getElementById('form-cliente-existente');
+        const formNuevo = document.getElementById('form-cliente-nuevo');
+        
+        if (checkbox && formExistente && formNuevo) {
             if (checkbox.checked) {
-                // Cliente existente - mostrar formulario existente, ocultar nuevo
                 formExistente.style.display = 'block';
                 formNuevo.style.display = 'none';
             } else {
-                // Cliente nuevo - mostrar formulario nuevo, ocultar existente
                 formExistente.style.display = 'none';
                 formNuevo.style.display = 'block';
             }
         }
+    }
 
-        // Función para limpiar formularios
-        function clearForm(formId) {
-            const form = document.getElementById(formId);
+    function clearForm(formId) {
+        const form = document.getElementById(formId);
+        if (form) {
             const inputs = form.querySelectorAll('input');
             inputs.forEach(input => {
                 input.value = '';
             });
         }
+    }
 
-        // Función para cancelar y volver al inicio
-        function cancelQuotation() {
-            // Ocultar todas las vistas
-            const views = document.querySelectorAll('.view');
-            views.forEach(view => {
-                view.classList.remove('active');
-            });
-            
-            // Mostrar la vista de inicio
-            document.getElementById('inicio-view').classList.add('active');
-            
-            // Actualizar estado activo en el sidebar
-            const sidebarItems = document.querySelectorAll('.sidebar-item');
-            sidebarItems.forEach(item => {
-                item.classList.remove('active');
-                if (item.getAttribute('data-view') === 'inicio-view') {
-                    item.classList.add('active');
-                }
-            });
-        }
-
-    </script>
-
+    function cancelQuotation() {
+        const views = document.querySelectorAll('.view');
+        views.forEach(view => {
+            view.classList.remove('active');
+        });
+        
+        const inicioView = document.getElementById('inicio-view');
+        if (inicioView) inicioView.classList.add('active');
+        
+        const sidebarItems = document.querySelectorAll('.sidebar-item');
+        sidebarItems.forEach(item => {
+            item.classList.remove('active');
+            if (item.getAttribute('data-view') === 'inicio-view') {
+                item.classList.add('active');
+            }
+        });
+    }
+</script>
+<?php
+if (isset($cnx)) {
+    mysqli_close($cnx);
+}
+?>
 </body>
 </html>
